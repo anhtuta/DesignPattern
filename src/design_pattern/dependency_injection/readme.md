@@ -18,7 +18,7 @@
   + Cung cấp (inject) các phụ thuộc được yêu cầu cho đối tượng (được truyền từ bên ngoài đối tượng).
 
 # Nguyên tắc hoạt động của DI:
-- Các module không giao tiếp trực tiếp với nhau, mà thông qua interface: module cấp thấp sẽ implement interface, module cấp cao sẽ gọi module cấp thấp thông qua interface.
+- Các module không giao tiếp trực tiếp với nhau, mà thông qua interface: module cấp thấp sẽ implement interface, module cấp cao sẽ gọi module cấp thấp thông qua interface (_Các Object nên phụ thuộc vào các Abstract Class và thể hiện chi tiết của nó sẽ được Inject vào đối tượng lúc runtime_)
 - Việc khởi tạo các module cấp thấp sẽ do DI Container/ IoC Container thực hiện.
 - Việc Module nào gắn với interface nào sẽ được config trong file properties, trong file XML hoặc thông qua Annotation (Annotation là một cách thường được sử dụng trong các Framework, chẳng hạn như @Inject với CDI, @Autowired với Spring hay @ManagedProperty với JSF.)
 
