@@ -51,6 +51,10 @@ Giới hạn:
 
 Giải pháp: xem code Java
 
+# VD2
+- Xem code trong package design_pattern.creational.dependency_injection.ex2
+- Giả sử 1 class User sẽ gồm các thuộc tính HairStyle, Outfit, Shoe. Mỗi 1 thuộc tính này có nhiều kiểu khác nhau (chẳng hạn Shoe thì có: Vans, Converse...). Do đó class User sẽ chỉ phụ thuộc vào các interface (tức là các thuộc tính của nó chỉ là interface), còn việc tạo ra instance cụ thể sẽ được tạo lúc runtime
+
 # Cài đặt
 Các thành phần tham gia Dependency Injection Pattern (xem ảnh):
 - Client : là một class cần sử dụng Service.
@@ -66,5 +70,23 @@ Các thành phần tham gia Dependency Injection Pattern (xem ảnh):
 - Khi cần một vài service được cung cấp bởi container.
 - Khi cần tách biệt các dependency giữa các môi trường phát triển khác nhau. Chẳng hạn, với môi trường dev chỉ cần log việc gửi mail, trong môi trường product cần gởi mail thông qua một API thật sự.
 
+# Inversion of Control
+- Dependency Injection giúp chúng ta dễ dàng mở rộng code và giảm sự phụ thuộc giữa các dependency với nhau. Tuy nhiên, lúc này, khi code bạn sẽ phải kiêm thêm nhiệm vụ Inject dependency (tiêm sự phụ thuộc).
+- Thử tưởng tượng một Class có hàng chục dependency thì bạn sẽ phải tự tay inject từng ý cái. Việc này lại dẫn tới khó khăn trong việc code, quản lý code và dependency
+```
+HairStyle hairStyle1 = new Sidepart();
+Outfit outfit1 = new Coolmate();
+Shoe shoe1 = new Converse();
+
+User u1 = new User(hairStyle1, outfit1, shoe1);
+```
+- Giá như lúc này có thằng làm hộ được chúng ta việc này thì tốt biết mấy
+- Bây giờ giả sử, chúng ta định nghĩa trước toàn bộ các dependency có trong Project, mô tả nó và tống nó vào 1 cái kho và giao cho một thằng tên là framework quản lý. Bất kỳ các Class nào khi khởi tạo, nó cần dependency gì, thì cái framework này sẽ tự tìm trong kho rồi inject vào đối tượng thay chúng ta. Đó cũng chính là nguyên lý chính của Inversion of Control. Spring framework đã hỗ trợ IOC
+- Hollywood principle cũng thường được gọi là một IoC hay DI:
+```
+Don't call me, I'll call you. (Đừng gọi cho chúng tôi, chúng tôi sẽ gọi cho bạn.)
+```
+
 # Ref
-https://gpcoder.com/4975-huong-dan-java-design-pattern-dependency-injection/
+- https://loda.me/spring-giai-thich-dependency-injection-di-va-io-c-bang-ngoc-trinh-loda1553326013583/
+- https://gpcoder.com/4975-huong-dan-java-design-pattern-dependency-injection/
