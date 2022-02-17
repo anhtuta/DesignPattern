@@ -1,4 +1,4 @@
-# Facade Pattern là gì
+# Facade Pattern là gì (/fəˈsɑːd/)
 - Facade Pattern là một mẫu thiết kế cấu trúc (Structural Pattern)
 - Pattern này cung cấp một giao diện chung đơn giản thay cho một nhóm các
   giao diện có trong một hệ thống con (subsystem). Facade Pattern định nghĩa

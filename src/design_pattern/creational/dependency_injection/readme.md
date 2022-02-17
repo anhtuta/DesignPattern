@@ -1,7 +1,7 @@
 # Intro
 - Nguyên lý SOLID trong OOP: chữ D chính là DIP – Dependency Inversion Principle (nguyên lý đảo ngược sự phụ thuộc). Nội dung của nguyên lý này:
   + Các module cấp cao không nên phụ thuộc vào các module cấp thấp. Cả 2 nên phụ thuộc vào abstraction.
-  + Interface (abstraction) không nên phụ thuộc vào chi tiết, mà ngược lại, chi tiết nên phụ thuộc vào abstraction. Các class giao tiếp với nhau thông qua interface, không phải thông qua implementation.
+  + Interface (abstraction) không nên phụ thuộc vào chi tiết, mà ngược lại, chi tiết nên phụ thuộc vào abstraction (Các class giao tiếp với nhau thông qua interface, không phải thông qua implementation)
 - Chúng ta thường hay lẫn lộn giữa các khái niệm Dependency Inversion Principle (DIP), Inversion of Control (IoC), Dependency Injection (DI). Ba khái niệm này tương tự nhau và có một mục đích duy nhất là tạo ra ứng dụng ít kết dính (loosely coupling), dễ mở rộng (flexibility).
 - Sự khác biệt giữa 3 khái niệm trên:
   + Dependency Inversion Principle (DIP): là một nguyên lý để thiết kế và viết code.
@@ -80,8 +80,10 @@ Shoe shoe1 = new Converse();
 
 User u1 = new User(hairStyle1, outfit1, shoe1);
 ```
+- Một vấn đề khác nảy sinh là làm thế nào chúng ta biết được một class sẽ phụ thuộc vào những class nào để khởi tạo nó
 - Giá như lúc này có thằng làm hộ được chúng ta việc này thì tốt biết mấy
-- Bây giờ giả sử, chúng ta định nghĩa trước toàn bộ các dependency có trong Project, mô tả nó và tống nó vào 1 cái kho và giao cho một thằng tên là framework quản lý. Bất kỳ các Class nào khi khởi tạo, nó cần dependency gì, thì cái framework này sẽ tự tìm trong kho rồi inject vào đối tượng thay chúng ta. Đó cũng chính là nguyên lý chính của Inversion of Control. Spring framework đã hỗ trợ IOC
+- Nguyên lý chính của Inversion of Control: Bây giờ giả sử, chúng ta định nghĩa trước toàn bộ các dependency có trong Project, mô tả nó và tống nó vào 1 cái kho và giao cho framework quản lý. Bất kỳ các Class nào khi khởi tạo, nó cần dependency gì, thì framework này sẽ tự tìm trong kho rồi inject vào đối tượng thay chúng ta. Cái kho đó chính là Dependency Injection Container, hay còn gọi là Inversion of Control Container (IoC Container).
+- Spring framework đã hỗ trợ IOC
 - Hollywood principle cũng thường được gọi là một IoC hay DI:
 ```
 Don't call me, I'll call you. (Đừng gọi cho chúng tôi, chúng tôi sẽ gọi cho bạn.)
@@ -90,3 +92,4 @@ Don't call me, I'll call you. (Đừng gọi cho chúng tôi, chúng tôi sẽ g
 # Ref
 - https://loda.me/spring-giai-thich-dependency-injection-di-va-io-c-bang-ngoc-trinh-loda1553326013583/
 - https://gpcoder.com/4975-huong-dan-java-design-pattern-dependency-injection/
+- https://toidicodedao.com/2015/11/03/dependency-injection-va-inversion-of-control-phan-1-dinh-nghia/
