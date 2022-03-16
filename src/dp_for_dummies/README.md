@@ -1,10 +1,31 @@
+## Design patterns
+
+Developers spend much more time **extending and changing code** than they do originally developing it (các dev thường dành nhiều time để mở rộng và sửa đổi code hơn là phát triển code mới)
+
+Design patterns are intended to help you **handle change** as you have to adapt your code to new and unforeseen circumstances
+
+## New words
+
+- Polymorphism: tính đa hình
+- Composition: tính tổng hợp, kết hợp (1 class sẽ gồm nhiều object khác)
+- Inheritance: tính kế thừa (1 class extends từ 1 class khác)
+- Base class: lớp cơ sở
+- Derived class: lóp dẫn xuất (kế thừa từ base class)
+- freestanding (adj): đứng 1 mình
+- volatile /ˈvɑː.lə.t̬əl/ (adj): dễ thay đổi (change rapidly and unpredictably)
+- interchangeable (adj): có thể hoán đổi lẫn nhau
+
 ## Chapter 2: Putting Plans into Action with the Strategy Pattern
+
+Design insight: **Separate the parts of your code that will change the most from the rest of your application. And always try to reuse those parts as much as possible.**
+
+### 2.1. Inheritance vs Composition
 
 Polymorphism (đa hình) thường phát huy tác dụng khi bạn làm việc với design pattern vì design pattern có xu hướng thiên về composition hơn là inheritance. (Composition (tổng hợp, kết hợp) nghĩa là khi object của bạn chứa các object khác thay vì kế thừa từ chúng.
 
 Design pattern-oriented programming (Lập trình hướng mẫu thiết kế) thường thích composition hơn là inheritance. Khi bạn sử dụng composition, code của bạn chứa các đối tượng khác, thay vì kế thừa từ chúng.
 
-### Bài toán thiết kế Vehicle
+### 2.2. Bài toán thiết kế Vehicle
 
 Xét ví dụ sau, giả sử bạn muốn thiết kế các Vehicle (phương tiện), ví dụ này tập trung vào method `go` thôi, mỗi phương tiện đều phải có method `go`, do đó ta tạo 1 `abstract class` như sau:
 
@@ -32,6 +53,9 @@ Mọi thứ trông khá ổn. Lúc này bạn lại phải thiết kế thêm s�
 
 ```java
 class Helicopter extends Vehicle {
+}
+
+class Jet extends Vehicle {
 }
 
 public class StartTheRace {
@@ -80,7 +104,7 @@ public class StartTheRace {
 }
 ```
 
-### Xử lý thay đổi với `has-a` thay vì `is-a`
+### 2.3. Xử lý thay đổi với `has-a` thay vì `is-a`
 
 Thời gian trôi qua, rất nhiều thứ thay đổi và bạn phải thiết kế lại cách máy bay di chuyển rất nhiều lần (= cách update method `go` nhiều lần):
 
@@ -104,7 +128,9 @@ Bạn có thể trích xuất các phần dễ thay đổi (volatile) trong code
 
 Túm lại: **Khi có nhiều thay đổi, nên dùng quan hệ `has-a` thay vì `is-a`, và TÁCH RIÊNG CODE THƯỜNG XUYÊN THAY ĐỔI sang 1 object riêng, thay vì KẾ THỪA TỪ ĐỐNG CODE HAY THAY ĐỔI đó.**
 
-### Tách riêng code hay thay đổi
+### 2.4. Tách riêng code hay thay đổi
+
+Remember: encapsulate code in external algorithms (các lớp GoAlgorithm) for easy use rather than spreading it around inside your core code and modifying it throughout that code (các lớp StreetRacer, Jet...).
 
 ```java
 interface GoAlgorithm {
@@ -189,7 +215,7 @@ class GoByDriving implements GoAlgorithm {
 }
 ```
 
-### Configuring behavior at runtime
+### 2.5. Configuring behavior at runtime
 
 **Quan hệ "has-a" sẽ flexible nhiều hơn mối quan hệ "is-a" when it comes to configuring behavior at runtime.**
 
@@ -215,3 +241,17 @@ jet2.go();
 jet2.setGoAlgorithm(new GoByDriving());
 jet2.go();
 ```
+
+### 2.6. Strategy pattern là gì?
+
+**Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from clients that use it**
+
+Strategy pattern là mẫu định nghĩa 1 tập các thuật toán có thể hoán đổi cho nhau, sau đó việc chọn thuật toán nào sẽ được quyết định lúc runtime
+
+![strategy pattern](./figure2-3-strategy-pattern.png)
+
+Nên dùng Strategy pattern trong những trường hợp sau:
+
+- Đoạn code hay thay đổi cần phải tách riêng để dễ maintain
+- You want to avoid muddling how you handle a task by having to split implementation code over several inherited classes (???)
+- Muốn xác định/thay đổi thuật toán sử dụng lúc runtime
