@@ -255,3 +255,37 @@ Nên dùng Strategy pattern trong những trường hợp sau:
 - Đoạn code hay thay đổi cần phải tách riêng để dễ maintain
 - You want to avoid muddling how you handle a task by having to split implementation code over several inherited classes (???)
 - Muốn xác định/thay đổi thuật toán sử dụng lúc runtime
+
+## Chapter 3: The Decorator and Factory Patterns
+
+### 3.1 Ví dụ về việc mua chiếc burger
+
+Xét ví dụ thực tế sau: giả sử bạn vào 1 quán ăn nhanh (KFC, Lotteria...):
+
+- Bạn gọi 1 chiếc burger thịt
+- 1 lát sau bạn lại thay đổi: "Bạn ơi mình muốn đổi sang 1 chiếc burger thịt với topping phô mai nhé"
+- Nhân viên nhìn bạn 1 cái và nói "Oke"
+- Xíu nữa, sau khi nhìn qua menu, b lại nói: "Hay là cho mình 1 chiếc burger thịt với phô mai và socola, được ko?"
+- The cook stares at you and seems on the verge of saying something unpleasant! Nhưng vẫn nói "Oke"
+- Bạn nhận lấy chiếc burger của mình và nói: "Liệu có thể thêm topping khoai tây được ko ạ?"
+- ...
+
+Một chiếc burger có thể trở thành burger phô mai, rồi lại thành burger phô mai socola, và rồi có thể thêm topping rất dễ dàng mà ko phải đập đi làm lại từ đầu. Chiếc burger là chính bắt buộc phải có, còn phô mai, socola hay là khoai tây thì cũng chỉ là các vật trang trí được thêm vào mà thôi (decorator)
+
+Nếu dùng Inheritance để giải quyết thì sẽ thiết kế như sau:
+- Tạo class `MeatBurger`
+- Tạo các class con kế thừa từ `MeatBurger`: `CheeseMeatBurger`, `ChocolateMeatBurger`, `PotatoMeatBurger`
+- Cần tạo THÊM các class con nữa kế thừa từ `MeatBurger`, tùy theo nhu cầu của khách hàng: `CheeseChocolateMeatBurger`, `CheesePotatoMeatBurger`, `CheeseChocolatePotatoMeatBurger`...
+- Mệt chưa :v
+- Giả sử có thêm 1 loại burger nữa là `VeggieBurger` (burger chay), cũng có các loại topping như trên, bài toán lúc này lại thêm rắc rối nếu dùng Inheritance vì cần tạo thêm các class con: `CheeseChocolateVeggieBurger`...
+
+Dùng decorator pattern: xem code [BurgerExample](./chapter3/decorator/BurgerExample.java)
+
+### 3.2. Decorator pattern
+
+It's all about extending the functionality of a given class: sau khi bạn code xong 1 class, bạn có thể decor cho nó bằng cách **using wrapper code to extend your core code**, hay nó cách khác là wrap nó trong 1 class khác. Do đó Decorator pattern còn được gọi là Wrapper pattern
+
+Doing so means that you won't have to keep modifying the original class's code over and over again
+
+Đây chính là nguyên lý **Open/closed principle** trong **SOLID**
+
