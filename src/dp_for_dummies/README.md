@@ -273,6 +273,7 @@ Xét ví dụ thực tế sau: giả sử bạn vào 1 quán ăn nhanh (KFC, Lot
 Một chiếc burger có thể trở thành burger phô mai, rồi lại thành burger phô mai socola, và rồi có thể thêm topping rất dễ dàng mà ko phải đập đi làm lại từ đầu. Chiếc burger là chính bắt buộc phải có, còn phô mai, socola hay là khoai tây thì cũng chỉ là các vật trang trí được thêm vào mà thôi (decorator)
 
 Nếu dùng Inheritance để giải quyết thì sẽ thiết kế như sau:
+
 - Tạo class `MeatBurger`
 - Tạo các class con kế thừa từ `MeatBurger`: `CheeseMeatBurger`, `ChocolateMeatBurger`, `PotatoMeatBurger`
 - Cần tạo THÊM các class con nữa kế thừa từ `MeatBurger`, tùy theo nhu cầu của khách hàng: `CheeseChocolateMeatBurger`, `CheesePotatoMeatBurger`, `CheeseChocolatePotatoMeatBurger`...
@@ -281,6 +282,11 @@ Nếu dùng Inheritance để giải quyết thì sẽ thiết kế như sau:
 
 Dùng decorator pattern: xem code [BurgerExample](./chapter3/decorator/BurgerExample.java)
 
+Ref:
+
+- https://refactoring.guru/design-patterns/decorator
+- https://viblo.asia/p/hieu-biet-co-ban-ve-decorator-pattern-pVYRPjbVG4ng
+
 ### 3.2. Decorator pattern
 
 It's all about extending the functionality of a given class: sau khi bạn code xong 1 class, bạn có thể decor cho nó bằng cách **using wrapper code to extend your core code**, hay nó cách khác là wrap nó trong 1 class khác. Do đó Decorator pattern còn được gọi là Wrapper pattern
@@ -288,4 +294,131 @@ It's all about extending the functionality of a given class: sau khi bạn code 
 Doing so means that you won't have to keep modifying the original class's code over and over again
 
 Đây chính là nguyên lý **Open/closed principle** trong **SOLID**
+
+### 3.1. Factory pattern: ví dụ về multiple database
+
+Theo [GPCoder](https://gpcoder.com/4352-huong-dan-java-design-pattern-factory-method/):
+
+- Factory Pattern đúng nghĩa là một nhà máy, và nhà máy này sẽ "sản xuất" các đối tượng theo yêu cầu của chúng ta.
+- Factory Pattern được sử dụng khi có một class cha (super-class) với nhiều class con (sub-class), dựa trên đầu vào và phải trả về 1 trong những class con đó
+
+Giả sử bạn cần connect tới 3 loại database trong 1 dự án, thì có thể dùng factory pattern để tạo object Connection:
+
+```java
+package dp_for_dummies.chapter3.factory;
+
+abstract class Connection {
+    public Connection() {}
+
+    public String description() {
+        return "Generic";
+    }
+}
+
+class MySqlConnection extends Connection {
+    public MySqlConnection() {}
+
+    @Override
+    public String description() {
+        return "MySQL";
+    }
+}
+class OracleConnection extends Connection {} // Similar to MySqlConnection
+class SqlServerConnection extends Connection {} // Similar to MySqlConnection
+
+// A factory class is a factory class, and that’s it. It’s not designed to be extended.
+// Trong sách đặt tên là "FirstFactory"
+final class ConnectionFactory {
+    protected String type;
+
+    public ConnectionFactory(String t) {
+        type = t;
+    }
+
+    public Connection createConnection() {
+        if (type.equals("Oracle")) {
+            return new OracleConnection();
+        } else if (type.equals("SQL Server")) {
+            return new SqlServerConnection();
+        } else {
+            return new MySqlConnection();
+        }
+    }
+}
+
+public class FactoryPattern {
+    public static void main(String[] args) {
+        ConnectionFactory factory = new ConnectionFactory("SQL Server");
+        Connection conn = factory.createConnection();
+        System.out.println(conn.description());
+    }
+}
+```
+
+Theo GoF, Factory pattern nên: **Define an interface for creating an object, but let subclasses decide which class to instantiate.**: tức là bạn chỉ cần định nghĩa 1 interface Factory, và **để các subclass tự implement 1 factory cụ thể**
+
+Quay lại ví dụ trên, giả sử bây giờ, với mỗi 1 database, bạn cần có thêm 1 cách kết nối `secure` nữa, chẳng hạn:
+
+```java
+class SecureMySqlConnection extends Connection {
+    public SecureMySqlConnection() {}
+
+    @Override
+    public String description() {
+        return "MySQL secure";
+    }
+}
+class SecureOracleConnection extends Connection {}
+class SecureSqlServerConnection extends Connection {}
+```
+
+Ta cần định nghĩa 1 abstract factory như sau, factory này sẽ có 1 method để tạo connection. Sau đó tạo các factory cụ thể để subclass (user) chọn, hoặc cũng có thể để user tự tạo factory
+
+```java
+abstract class ConnectionFactory {
+    public ConnectionFactory() {}
+
+    protected abstract Connection createConnection(String type);
+}
+class NormalFactory extends ConnectionFactory {
+    @Override
+    public Connection createConnection(String type) {
+        if (type.equals("Oracle")) {
+            return new OracleConnection();
+        } else if (type.equals("SQL Server")) {
+            return new SqlServerConnection();
+        } else {
+            return new MySqlConnection();
+        }
+    }
+}
+class SecureFactory extends ConnectionFactory {
+    @Override
+    public Connection createConnection(String type) {
+        if (type.equals("Oracle")) {
+            return new SecureOracleConnection();
+        } else if (type.equals("SQL Server")) {
+            return new SecureSqlServerConnection();
+        } else {
+            return new SecureMySqlConnection();
+        }
+    }
+}
+```
+
+Giờ chỉ việc xài thôi:
+
+```java
+// tự chọn 1 factory theo ý muốn
+ConnectionFactory factory1 = new SecureFactory();
+
+// sau đó yêu cầu factory tạo object connection theo ý muốn
+Connection conn1 = factory1.createConnection("SQL Server");
+
+System.out.println(conn1.description());
+
+ConnectionFactory factory2 = new NormalFactory();
+Connection conn2 = factory2.createConnection("Oracle");
+System.out.println(conn2.description());
+```
 
