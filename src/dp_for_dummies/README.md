@@ -540,11 +540,136 @@ class Boss implements Observer {
 }
 ```
 
+[Full code: check this folder](./chapter4/observer/ob1_simple_example/)
+
 ### 4.3. Loose coupling
 
 > The Observer and Chain of Responsibility design patterns implement what’s called **loose coupling**
 
-> The design insight here is that **loose coupling between objects**, *rather than simply extending objects* by making them do more than they were meant to do
+> The design insight here is that **loose coupling between objects**, _rather than simply extending objects_ by making them do more than they were meant to do
 
 > Go for loose coupling when it comes to information flow
+
+### 4.4. Critical issue when passing by reference
+
+Giả sử `record` ko phải kiểu String (immutable) nữa, mà là 1 kiểu Object, chẳng hạn Employee:
+
+```java
+public class Employee {
+    private int id;
+    private String name;
+    // Getters, setters, constructor
+    @Override
+    public String toString() { return "Employee{id:'" + id + "',name:'" + name + "'}"; }
+}
+public interface Observer {
+    // record kiểu Object chứ ko phải String nữa
+    public void update(String operation, Object record);
+}
+class DatabaseHelper implements Publisher {
+    private List<Observer> observers;
+    private String operation;
+    private Employee employee; // record kiểu Employee chứ ko phải String nữa
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            // Bởi vì Java pass theo reference, do đó bên Observer
+            // HOÀN TOÀN CÓ THỂ THAY ĐỔI giá trị bên trong Employee
+            o.update(operation, employee);
+        }
+    }
+
+    public void saveToDb(String operation, Employee employee) {
+        this.operation = operation;
+        this.employee = employee;
+        notifyObservers();
+    }
+}
+```
+
+Bởi vì Java pass theo reference, do đó bên Observer HOÀN TOÀN CÓ THỂ THAY ĐỔI giá trị bên trong Employee:
+
+```java
+// Các anh dev cần nhận được thông báo về các thay đổi của database
+class Developer implements Observer {
+    @Override
+    public void update(String operation, Object record) {
+        System.out.printf(
+                "Dev đã thấy được database thay đổi:\n\thành động '%s' trên bản ghi '%s'\n",
+                operation, record);
+
+        // This name has been alter by an observer!!! This is a critical issue that should be fixed
+        if (record instanceof Employee) {
+            ((Employee) record).setName("Hahaha!");
+        }
+    }
+}
+```
+
+[Full code: check this folder](./chapter4/observer/ob2_pass_reference/)
+
+Kết quả run thử:
+
+```
+Dev đã thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Lorem ipsum'}'
+Leader đã thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Hahaha!'}'
+Boss cũng có thể thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Hahaha!'}'
+```
+
+Ta thấy sau khi Dev thay đổi record, Leader và Boss ko còn nhận được thông báo đúng nữa! (Tên của employee bị thay đổi 'Lorem ipsum' -> 'Hahaha', leader và boss ko hề biết)
+
+### 4.5. Using Java built-in Observer
+
+Giải pháp: có thể dùng Publisher và Observer có sẵn của Java, nhưng hiện tại đã bị lỗi thời:
+
+```java
+import java.util.Observable;
+@SuppressWarnings("deprecation")
+class DatabaseHelper extends Observable {
+    // ...
+    public void saveToDb(String operation, Employee employee) {
+        this.setOperation(operation);
+        this.setEmployee(employee);
+        setChanged();   // phải gọi method này của Observable trước khi notify
+        notifyObservers();  // notify sự thay đổi cho các observer biết
+    }
+}
+
+import java.util.Observable;
+import java.util.Observer;
+@SuppressWarnings("deprecation")
+class Developer implements Observer {
+    @Override
+    public void update(Observable obs, Object arg) {
+        System.out.printf(
+                "Dev đã thấy được database thay đổi:\n\thành động '%s' trên bản ghi '%s'\n",
+                ((DatabaseHelper) obs).getOperation(),
+                ((DatabaseHelper) obs).getEmployee().getName());
+
+        // Thay đổi data ở đây ko ảnh hưởng tới các observer khác
+        ((DatabaseHelper) obs).getEmployee().setName("Hahaha");
+    }
+}
+```
+
+[Full code: check this folder](./chapter4/observer/ob3_pass_reference_using_java_observer/)
+
+Kết quả run: 1 observer thay đổi data sẽ ko ảnh hưởng tới các observer khác
+
+```
+Dev đã thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Lorem ipsum'}'
+Leader đã thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Lorem ipsum'}'
+Boss cũng có thể thấy được database thay đổi:
+	hành động 'INSERT' trên bản ghi 'Employee{id:'1',name:'Lorem ipsum'}'
+```
+
+Tuy nhiên, Observer có sẵn của Java đã bị deprecated, do đó đây ko hẳn là 1 solution hay ho lắm!
+
+TODO: tìm 1 giải pháp khác!!!
 
