@@ -14,6 +14,7 @@ Design patterns are intended to help you **handle change** as you have to adapt 
 - freestanding (adj): đứng 1 mình
 - volatile /ˈvɑː.lə.t̬əl/ (adj): dễ thay đổi (change rapidly and unpredictably)
 - interchangeable (adj): có thể hoán đổi lẫn nhau
+- Runtime: là giai đoạn mà chương trình đang chạy (đang thực thi). VD như `RuntimeException` là `Exception` xảy ra trong thời gian chương trình chạy, chẳng hạn `ArrayIndexOutOfBoundsException`, `NullPointerException`, `ArithmaticException` là các ngoại lệ chỉ xảy ra tại lúc runtime
 
 ## Chapter 2: Putting Plans into Action with the Strategy Pattern
 
@@ -421,4 +422,129 @@ ConnectionFactory factory2 = new NormalFactory();
 Connection conn2 = factory2.createConnection("Oracle");
 System.out.println(conn2.description());
 ```
+
+## Chapter 4: Observer and Chain of Responsibility Patterns
+
+### 4.1. Observer pattern vs Chain of Responsibility Pattern
+
+Sếp của bạn muốn nhận tất cả thông báo về bất kỳ thay đổi nào tới database, bạn liền nghĩ tới observer pattern
+
+> You smile to yourself as you turn to the code, wondering how happy the boss is going to be with about 200,000 notifications a day
+
+Observer pattern còn được gọi là Event-Subscriber, Listener. Nó hoạt động giống như mô hình Pub-sub đó (khá quen thuộc): Observer pattern cho phép các observer (subscriber, listener) nhận thông báo mỗi khi 1 object nào đó thay đổi. Mỗi 1 observer sẽ register (subscribe, follow, listen) tới 1 object Publisher, và khi Publisher thay đổi, mọi observer sẽ được thông báo **đồng thời**
+
+Chain of Responsibility Pattern: khá giống với Observer pattern, chỉ khác là các observer được kết nối thành 1 chuỗi (chain). Thông báo sẽ đi từ observer này sang observer khác (tức là 1 observer xử lý thông báo xong có thể pass hoặc ko pass tới observer tiếp theo)
+
+Theo GoF, Observer pattern should **Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically**
+
+Các observer sẽ có thể subscribe/unsubscribe 1 Publisher tại lúc runtime, hoạt động như sau:
+
+![figure4-1](./figure4-1.png)
+
+![figure4-2](./figure4-2.png)
+
+![figure4-3](./figure4-3.png)
+
+![figure4-4](./figure4-4.png)
+
+![figure4-5](./figure4-5.png)
+
+### 4.2. Implement observer pattern to send notification to your boss
+
+Đầu tiên cần 2 interface là Publisher và Observer
+
+```java
+// Trong sách đặt là Subject
+public interface Publisher {
+    // Thêm mới 1 object observer (có thể gọi là subscriber, người quan sát, người theo dõi),
+    // Việc lưu 1 subscriber mới ở đâu sẽ để class con tự implement (Array, List, Hash...)
+    public void registerObserver(Observer o);
+    public void removeObserver(Observer o);
+    // Thông báo cho tất cả các observer đã thêm ở trên,
+    // việc thông báo cái gì sẽ để class con tự implement
+    public void notifyObservers();
+}
+
+// Observer giống như Subscriber vậy
+public interface Observer {
+    // Nhận thông báo từ Publisher:
+    // Method này sẽ được bên Publisher gọi mỗi khi Publisher có thay đổi gì mới
+    // Việc gọi khi nào sẽ do class con của Publisher implement
+    public void update(String operation, String record);
+}
+```
+
+Sửa code truy cập tới database: ta cần implement `Publisher` ở trên:
+
+```java
+// Class giúp thao tác tới database
+class DatabaseHelper implements Publisher {
+
+    private List<Observer> observers;
+    private String operation;
+    private String record;
+
+    public DatabaseHelper() {
+        // dùng LinkedList vì chủ yếu dùng các thao tác add, remove, duyệt tuần tự,
+        // chứ ko cần truy cập phần tử ngẫu nhiên
+        observers = new LinkedList<>();
+    }
+
+    @Override
+    public void registerObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update(operation, record);
+        }
+    }
+
+    // Save record xuống database, sau khi thực hiện thì sẽ notify tới các observers
+    public void saveToDb(String operation, String record) {
+        this.operation = operation;
+        this.record = record;
+        notifyObservers();
+    }
+}
+```
+
+Phía class `Boss`, chỉ cần implement interface `Observer` là sẽ nhận được thông báo mỗi khi database được update
+
+```java
+// Các anh dev cần nhận được thông báo về các thay đổi của database
+class Developer implements Observer {
+    @Override
+    public void update(String operation, String record) {
+        System.out.printf("Dev đã thấy được database thay đổi, hành động '%s' trên bản ghi '%s'\n",
+                operation, record);
+    }
+}
+
+// Ông sếp rảnh quá nên cũng muốn nhận thông báo về các thay đổi của database
+class Boss implements Observer {
+    @Override
+    public void update(String operation, String record) {
+        System.out.printf(
+                "Boss cũng có thể thấy được database thay đổi, hành động '%s' trên bản ghi '%s'\n",
+                operation, record);
+    }
+
+}
+```
+
+### 4.3. Loose coupling
+
+> The Observer and Chain of Responsibility design patterns implement what’s called **loose coupling**
+
+> The design insight here is that **loose coupling between objects**, *rather than simply extending objects* by making them do more than they were meant to do
+
+> Go for loose coupling when it comes to information flow
 
