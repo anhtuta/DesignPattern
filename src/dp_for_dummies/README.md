@@ -673,3 +673,61 @@ Tuy nhiên, Observer có sẵn của Java đã bị deprecated, do đó đây ko
 
 TODO: tìm 1 giải pháp khác!!!
 
+### 4.6. Chain of Responsibility Pattern
+
+Khá giống với Observer pattern, khác ở chỗ pattern này có nhiều observer được chain (nối) với nhau giống 1 DSLK, và request đầu tiên sẽ được gửi tới observer1, nếu nó ko xử lý được thì sẽ pass xuống observer2...
+
+![figure-4-7](./figure4-7.png)
+
+Ví dụ: giả sử hệ thống của bạn có 3 tầng như sau:
+
+![figure-4-8](./figure4-8.png)
+
+User sẽ gửi request nhờ xử lý, đầu tiên sẽ để tầng Frontend handle đã, nếu ko handle được thì tầng FE sẽ gửi request đó xuống tầng 2, nếu tầng 2 vẫn ko xử lý được thì sẽ gửi xuống tầng dưới cùng là tầng Application để xử lý
+
+```java
+public interface HelpInterface {
+    public void getHelp(HelpEnum helpEnum);
+}
+
+class FrontEnd implements HelpInterface {
+    // Biến này chính là observer tiếp theo, nếu observer này ko xử lý được
+    // thì sẽ pass request xuống observer đó
+    private HelpInterface successor;
+    public FrontEnd(HelpInterface successor) {
+        this.successor = successor;
+    }
+    @Override
+    public void getHelp(HelpEnum helpEnum) {
+        if (helpEnum != HelpEnum.FRONT_END_HELP) {
+            successor.getHelp(helpEnum);
+        } else {
+            System.out.println("This is the front end. Don’t you like it?");
+        }
+    }
+}
+class IntermediateLayer implements HelpInterface {
+    private HelpInterface successor;    // observer tiếp theo
+    public IntermediateLayer(HelpInterface successor) {
+        this.successor = successor;
+    }
+    @Override
+    public void getHelp(HelpEnum helpEnum) {
+        if (helpEnum != HelpEnum.INTERMEDIATE_LAYER_HELP) {
+            successor.getHelp(helpEnum);
+        } else {
+            System.out.println("This is the intermediate layer. Nice, eh?");
+        }
+    }
+}
+class Application implements HelpInterface {
+    public Application() {}
+    @Override
+    public void getHelp(HelpEnum helpEnum) {
+        System.out.println(
+                "This is final help layer, if we cannot help you, try to find help from somewhere else!");
+    }
+}
+```
+
+Đã note tới page 107/339
