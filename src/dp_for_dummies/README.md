@@ -730,4 +730,59 @@ class Application implements HelpInterface {
 }
 ```
 
-Đã note tới page 107/339
+## Chapter 5: From One to Many: The Singleton and Flyweight Patterns
+
+### 5.1. Singleton pattern
+
+Đây là pattern đơn giản nhất rồi nên chả cần nói nhiều: Singleton đảm bảo 1 class chỉ có duy nhất 1 instance, và cung cấp 1 method để có thể truy cập vào instance đó
+
+Có nhiều cách implement Singleton (bao gồm cả thread safe), [xem thêm tại đây](../design_pattern/creational/singleton/readme.md)
+
+Note: việc implement singleton dùng `synchronized method` khá là expensive
+
+### 5.2. The Flyweight Pattern Makes One Look like Many
+
+Ngoài Singleton, Flyweight Pattern cũng có thể hạn chế việc tạo mới object, nhưng pattern này sẽ cho bạn cảm giác là đang dùng nhiều object dù thực chất bạn chỉ đang dùng 1 object 🤨
+
+**A flyweight is a shared object that can be used in multiple contexts simultaneously**
+
+Bất cứ khi nào bạn có một số lượng lớn các object rất lớn, có thể nghĩ tới Flyweight pattern. Pattern này hoạt động giống như 1 template vậy
+
+Giả sử có 1 class Student như sau:
+```java
+class Student {
+    private String name;
+    private int id;
+    private int score;
+    private double averageScore;    // điểm trung bình của cả lớp
+    
+    // getters, setters
+
+    public double getStanding() {
+        return ((score) / averageScore - 1.0) * 100.0;
+    }
+}
+```
+
+Trong đó field `averageScore` là giống nhau nhau với từng học sinh. Ta sẽ tạo duy nhất 1 object Student có averageScore cố định trong suốt chương trình
+
+```java
+public static void main(String[] args) {
+    String names[] = {"Ralph", "Alice", "Sam"};
+    int ids[] = {1001, 1002, 1003};
+    int scores[] = {45, 55, 65};
+
+    double total = Arrays.stream(scores).reduce(0, (a, b) -> a + b);
+    double averageScore = total / scores.length;
+    Student student = new Student(averageScore);    // chỉ tạo 1 object Student
+
+    for (int i = 0; i < scores.length; i++) {
+        student.setName(names[i]);
+        student.setId(ids[i]);
+        student.setScore(scores[i]);
+        System.out.printf("Name: %s, with standing: %.0f%%\n", student.getName(),
+                student.getStanding());
+    }
+}
+```
+
