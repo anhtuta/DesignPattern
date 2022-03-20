@@ -918,3 +918,155 @@ Facade đơn giản hóa 1 interface
 The Adapters are more about making an interface easier to work with, while Facade defines a higher-level interface that makes the subsystem easier to use
 
 Warning: dùng Facade phải tạo thêm 1 layer, nếu các code bên dưới thay đổi, thì bạn phải update cả layer Facade
+
+## Chapter 7: The Template Method and Builder Patterns
+
+### 7.1. Template Method pattern
+
+Giả sử công ty bạn muốn lập trình 1 con robot để nó có thể tự thiết kế xe hơi. Cái con robot xe hơi này có các method chính sau
+
+```java
+// Automotive: thuộc về oto
+class AutomotiveRobot {
+    public void start() {
+        System.out.println("Starting....");
+    }
+    public void getParts() {
+        System.out.println("Getting a carburetor...."); // Bộ chế hòa khí, 1 bộ phận của oto
+    }
+    public void assemble() {
+        System.out.println("Installing the carburetor....");
+    }
+    public void test() {
+        System.out.println("Revving the engine....");
+    }
+    public void stop() {
+        System.out.println("Stopping....");
+    }
+    public void go() {
+        start();
+        getParts();
+        assemble();
+        test();
+        stop();
+    }
+}
+```
+
+Con robot thiết kế xong, chạy ngon lành! Sau đó tháng sau, sếp bạn lại muốn sản xuất thêm 1 loại robot nữa để nó sản xuất bánh quy! Con robot này có các bước làm bánh quy giống với robot oto, chỉ khác ở vài step, nếu như thiết kế nó từ đầu thì duplicate code khá nhiều!
+
+Bạn liền nghĩ đến Template method pattern!
+
+Nó là cái quái gì? Template method xác định khung (skeleton) của một thuật toán, trì hoãn (ko implement chi tiết) một số bước đối với các lớp con. Pattern này cho phép các lớp con override lại các bước nhất định của một thuật toán mà không thay đổi cấu trúc của thuật toán
+
+Nghĩa là: bạn dùng Template method pattern khi bạn có 1 thuật toán gồm nhiều bước, và bạn muốn customize lại 1 số bước trong đó! (bước nào dùng luôn được thì khỏi customize lại)
+
+Note: nếu bạn phải customize toàn bộ các step, thì Template method pattern ko cần thiết!
+
+```java
+abstract class RobotTemplate {
+    public void start() {
+        System.out.println("Starting....");
+    }
+    public void getParts() {
+        System.out.println("Getting parts....");
+    }
+    public void assemble() {
+        System.out.println("Assembling....");
+    }
+    public void test() {
+        System.out.println("Testing....");
+    }
+    public void stop() {
+        System.out.println("Stopping....");
+    }
+
+    // thuật toán go của template gồm các step như ở dưới (theo đúng trình tự và số lượng),
+    // class con có thể customize 1 vài step, và tất nhiên nó ko thê được phép
+    // customize method này
+    public final void go() {
+        start();
+        getParts();
+        assemble();
+        test();
+        stop();
+    }
+}
+
+
+// Robot oto cần định nghĩa lại các step: getParts, assemble, test
+class AutomotiveRobot extends RobotTemplate { // Automotive: thuộc về oto
+    @Override
+    public void getParts() {
+        System.out.println("Getting a carburetor...."); // Bộ chế hòa khí, 1 bộ phận của oto
+    }
+    @Override
+    public void assemble() {
+        System.out.println("Installing the carburetor....");
+    }
+    @Override
+    public void test() {
+        System.out.println("Revving the engine....");
+    }
+}
+
+// Robot bánh quy cũng cần định nghĩa lại 3 step sau
+class CookieRobot extends RobotTemplate {
+    @Override
+    public void getParts() {
+        System.out.println("Getting flour and sugar....");
+    }
+    @Override
+    public void assemble() {
+        System.out.println("Baking a cookie....");
+    }
+    @Override
+    public void test() {
+        System.out.println("Crunching a cookie....");
+    }
+}
+```
+
+### 7.2. Add hook
+
+> A hook is a method that controls some aspect of that algorithm
+
+Giả sử bạn muốn tạo mới Robot làm bánh chưng và bạn muốn skip 1 step thì làm như nào? Có thể thêm hook như sau:
+
+```java
+abstract class RobotTemplate {
+    // Mặc định thuật toán go sẽ cần step test, nếu class con nào ko cần
+    // thì chỉ cần override lại method này
+    public boolean isTest() {
+        return true;
+    }
+    public final void go() {
+        start();
+        getParts();
+        assemble();
+        if (isTest()) { // make the testing part optional
+            test();
+        }
+        stop();
+    }
+}
+
+class ChungCakeRobot extends RobotTemplate {
+    @Override
+    public void getParts() {
+        System.out.println("Chuẩn bị lá dong, nạt tre, gạo nếp, thịt ba chỉ, đậu xanh....");
+    }
+
+    @Override
+    public void assemble() {
+        System.out.println("Gói bánh xong ngồi đun....");
+    }
+
+    @Override
+    public boolean isTest() {
+        return false;
+    }
+}
+```
+
+> You use the Template Method design pattern when you’ve got an algorithm of several steps and you want to allow customization by subclasses
