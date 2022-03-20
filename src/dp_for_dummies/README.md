@@ -749,13 +749,14 @@ Ngoài Singleton, Flyweight Pattern cũng có thể hạn chế việc tạo m�
 Bất cứ khi nào bạn có một số lượng lớn các object rất lớn, có thể nghĩ tới Flyweight pattern. Pattern này hoạt động giống như 1 template vậy
 
 Giả sử có 1 class Student như sau:
+
 ```java
 class Student {
     private String name;
     private int id;
     private int score;
     private double averageScore;    // điểm trung bình của cả lớp
-    
+
     // getters, setters
 
     public double getStanding() {
@@ -786,3 +787,134 @@ public static void main(String[] args) {
 }
 ```
 
+## Chapter 6: The Adapter and Facade Patterns
+
+### 6.1. Adapter pattern
+
+The Adapter design pattern lets you fix the interface between objects and classes without having to modify the objects or classes directly
+
+Giả sử hệ thống của bạn có 2 phần: UI và BE. Flow của hệ thống là UI gửi object `Ace` cho BE xử lý. Và BE cũng chỉ nhận object `Ace` mà thôi
+
+![figure6-1](./figure6-1.png)
+
+Một ngày đẹp trời, sếp bạn nói muốn BE chuyển sang dùng object mới là `Acme`, khi này phía UI vẫn gửi object `Ace`, còn BE lúc này chỉ nhận `Acme` thôi 😑
+
+![figure6-2](./figure6-2.png)
+
+Solution: tạo 1 adapter để chuyển đổi từ `Ace` (gửi từ UI) sang `Acme` (cho BE xài)
+
+![figure6-3](./figure6-3.png)
+
+```java
+// Phía UI chỉ gửi cho BE object kiểu Ace, và hiện tại BE cũng chỉ handle object kiểu Ace
+interface Ace {
+    public void setName(String n);
+    public String getName();
+}
+
+// New update: phía BE lúc này muốn chuyển sang dùng object Acme, tức là nó
+// chỉ có thể nhận Acme object để xử lý thôi!
+interface Acme {
+    public void setFirstName(String f);
+    public void setLastName(String l);
+    public String getFirstName();
+    public String getLastName();
+}
+
+// How to solve: tạo 1 adapter để chuyển đổi object Ace được gửi từ phía FE
+// sang object Acme mà BE có thể handle được.
+// => Adapt Ace object để nó trông giống như Acme object
+class AceToAcmeAdapter implements Acme {
+    // adapter cần chứa 1 object Ace (object cần được chuyển đổi, cần được adapt (adapted object))
+    Ace ace;
+    String firstName;
+    String lastName;
+
+    public AceToAcmeAdapter(AceClass ace) {
+        this.ace = ace;
+        firstName = ace.getName().split(" ")[0];
+        lastName = ace.getName().substring(firstName.length()).trim();
+    }
+
+    @Override
+    public void setFirstName(String f) {
+        this.firstName = f;
+    }
+    @Override
+    public void setLastName(String l) {
+        this.lastName = l;
+    }
+    @Override
+    public String getFirstName() {
+        return firstName;
+    }
+    @Override
+    public String getLastName() {
+        return lastName;
+    }
+}
+
+public static void main(String[] args) {
+    // Ace object được gửi từ UI
+    AceClass ace = new AceClass();
+    ace.setName("Tony Stark");
+
+    // Phía BE: Acme object được chuyển đổi từ Ace object
+    Acme acme = new AceToAcmeAdapter(ace);
+    System.out.println(acme.getFirstName() + ", " + acme.getLastName());
+}
+```
+
+> Adapter converts the interface of a class into another interface the client expects.
+
+Bạn sử dụng Adapter khi cố gắng lắp một chốt hình vuông vào một lỗ hình tròn
+
+> An adapter uses composition to store the object it’s supposed to adapt, and when the adapter’s methods are called, it translates those calls into something the adapted object can understand and passes the calls on to the adapted object
+
+### 6.2. Simplifying Life with Facades
+
+The Adapter pattern adapts code to work with other code, while the Facade pattern gives you a wrapper that makes the original code easier to deal with
+
+Giả sử bạn làm việc với 1 thư viện có chức năng print, bạn phải gọi lần lượt 1 đống các method sau để có thể in 1 đoạn text:
+
+```java
+interface Printer {
+    void initPrinter();
+    void turnFanOn();
+    void warmUp();
+    void getData(String text);
+    void formatData(String text);
+    void checkPaperSupply();
+    void runInternalDiagnostics();
+    void print(String text);
+    void cleanUp();
+}
+```
+
+Quá nhiều method! Bạn liền tạo 1 class tên là FacadePrinter, trong này bạn sẽ gọi toàn bộ đống method ở trên
+
+```java
+class FacadePrinter {
+    void print(String text) {
+        initPrinter();
+        turnFanOn();
+        warmUp();
+        getData(text);
+        formatData(text);
+        checkPaperSupply();
+        runInternalDiagnostics();
+        print(text);
+        cleanUp();
+    }
+}
+```
+
+> Provide a unified interface to a set of interfaces in a system. Facade defines a higher-level interface that makes the subsystem easier to use
+
+Facade đơn giản hóa 1 interface
+
+![figure6-7](./figure6-7.png)
+
+The Adapters are more about making an interface easier to work with, while Facade defines a higher-level interface that makes the subsystem easier to use
+
+Warning: dùng Facade phải tạo thêm 1 layer, nếu các code bên dưới thay đổi, thì bạn phải update cả layer Facade
