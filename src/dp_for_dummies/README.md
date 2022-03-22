@@ -1070,3 +1070,107 @@ class ChungCakeRobot extends RobotTemplate {
 ```
 
 > You use the Template Method design pattern when you’ve got an algorithm of several steps and you want to allow customization by subclasses
+
+### 7.3. Building Robots with the Builder Pattern
+
+Giả sử bây giờ bạn lại muốn thay đổi thứ tự các step trong method `go` ở trên thì làm thế nào? Rõ ràng method go của Template method pattern là final, nên ko thể override lại để thay đổi flow của thuật toán `go` được! Bạn có thể dùng builder pattern
+
+Note: Builder pattern trong sách này khá KHÁC so với builder hay thấy trong Java (chẳng hạn trong Lombok). Các builder trong Java được dùng để khởi tạo 1 object:
+
+- Có nhiều field
+- Mỗi 1 object có thể khởi tạo các field mình muốn, ko cần khởi tạo toàn bộ field (do đó nếu dùng constructor thì sẽ phải tạo rất nhiều constructor)
+- Tương lai có thể thêm các field mới
+
+Quay lại ví dụ, ta sẽ tạo 1 builder như sau:
+
+```java
+interface RobotBuildable {
+    public void go();
+}
+interface RobotBuilder {
+    public void addStart();
+    public void addGetParts();
+    public void addAssemble();
+    public void addTest();
+    public void addStop();
+    public RobotBuildable getRobot();
+}
+
+class CookieRobotBuilder implements RobotBuilder {
+    private CookieRobotBuildable robot;
+    private List<Integer> actions;
+    public CookieRobotBuilder() {
+        robot = new CookieRobotBuildable();
+        actions = new LinkedList<Integer>();
+    }
+    @Override
+    public void addStart() {
+        actions.add(1);
+    }
+    @Override
+    public void addGetParts() {
+        actions.add(2);
+    }
+    @Override
+    public void addAssemble() {
+        actions.add(3);
+    }
+    @Override
+    public void addTest() {
+        actions.add(4);
+    }
+    @Override
+    public void addStop() {
+        actions.add(5);
+    }
+    @Override
+    public RobotBuildable getRobot() {
+        robot.loadActions(actions);
+        return robot;
+    }
+}
+
+class CookieRobotBuildable implements RobotBuildable {
+    private List<Integer> actions;
+    public void loadActions(List<Integer> actions) {
+        this.actions = actions;
+    }
+    @Override
+    public final void go() {
+        Iterator<Integer> itr = actions.iterator();
+        while (itr.hasNext()) {
+            switch (itr.next()) {
+                case 1:
+                    start();
+                    break;
+                case 2:
+                    getParts();
+                    break;
+                case 3:
+                    assemble();
+                    break;
+                case 4:
+                    test();
+                    break;
+                case 5:
+                    stop();
+                    break;
+            }
+        }
+    }
+    // các method start,getParts,...
+}
+
+public static void main(String[] args) {
+    RobotBuilder builder = new CookieRobotBuilder();
+    builder.addStart();
+    builder.addTest();
+    builder.addAssemble();
+    builder.addStop();
+
+    RobotBuildable robot = builder.getRobot();
+    robot.go();
+}
+```
+
+Có thể làm cách khác: [my personal way](./chapter7/builder/myway/BuilderPatternMyWay.java)
