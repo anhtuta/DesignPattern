@@ -1,5 +1,6 @@
 package dp_for_dummies.chapter7.builder.myway;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,11 +72,9 @@ abstract class RobotTemplate {
 
 
 class RobotBuilder {
-    private RobotTemplate robot;
     private List<Integer> actions;
 
-    public RobotBuilder(RobotTemplate robot) {
-        this.robot = robot;
+    public RobotBuilder() {
         actions = new LinkedList<Integer>();
     }
 
@@ -104,10 +103,17 @@ class RobotBuilder {
         return this;
     }
 
-    public RobotTemplate build() {
-        // làm sao để khởi tạo class con của RobotTemplate ở đây?
-        robot.loadActions(actions);
-        return robot;
+    public RobotTemplate build(Class<? extends RobotTemplate> robotTemplateClass) {
+        try {
+            RobotTemplate robot;
+            robot = robotTemplateClass.getDeclaredConstructor().newInstance();
+            robot.loadActions(actions);
+            return robot;
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
@@ -147,16 +153,12 @@ class ChungCakeRobot extends RobotTemplate {
 public class BuilderPatternMyWay {
 
     public static void main(String[] args) {
-        // Đang gọi 2 lần new CookieRobot()
-        // TODO: tìm 1 solution để fix chỗ này
-        RobotBuilder builder =
-                new RobotBuilder(new CookieRobot()).addStart().addTest().addAssemble().addStop();
-        CookieRobot cookieRobot = (CookieRobot) builder.build();
+        RobotBuilder builder = new RobotBuilder().addStart().addTest().addAssemble().addStop();
+        RobotTemplate cookieRobot = builder.build(CookieRobot.class);
         cookieRobot.go();
 
-        RobotBuilder builder2 = new RobotBuilder(new ChungCakeRobot()).addStart().addGetParts()
-                .addAssemble().addStop();
-        ChungCakeRobot chungCakeRobot = (ChungCakeRobot) builder2.build();
+        RobotBuilder builder2 = new RobotBuilder().addStart().addGetParts().addAssemble().addStop();
+        ChungCakeRobot chungCakeRobot = (ChungCakeRobot) builder2.build(ChungCakeRobot.class);
         chungCakeRobot.go();
     }
 }
