@@ -1174,3 +1174,229 @@ public static void main(String[] args) {
 ```
 
 Có thể làm cách khác: [my personal way](./chapter7/builder/myway/BuilderPatternMyWay.java)
+
+## Chapter 8: Handling Collections with the Iterator and Composite Patterns
+
+### 8.1. Iterator pattern
+
+Giả sử công ty bạn chia thành các Division (bộ phận), bạn cần theo dõi các phó giám đốc (VP) ở từng bộ phận (do cty bạn có quá nhiều VP :v). Class Division sẽ như sau
+
+```java
+
+// Mỗi bộ phận lưu danh sách các phó chủ tịch!
+// Cty có quá nhiều phó chủ tịch!!!
+class Division {
+    private String name; // tên bộ phận
+    private VP[] VPs = new VP[100];
+    private int number = 0;
+}
+```
+
+Bài toán đơn giản thôi, dùng iterator để duyệt cái danh sách các VP ở trên. Nhưng đầu tiên hãy nói về iterator pattern đã
+
+> These days, you have all kinds of collections to work with — trees, binary trees, arrays, ring buffers, hashes, hash maps, array lists, and many more
+
+Các loại CTDL (collection) trên lưu trữ data theo từng cách riêng, và nếu như muốn truy cập từng phần tử trong từng CTDL đó, bạn sẽ phải hiểu rõ cách mà chúng lưu data như nào!  
+=> Đó chính là lúc nên dùng iterator pattern, nó sẽ cho phép bạn truy cập phần tử của mọi CTDL theo 1 cách tiêu chuẩn **mà ko cần biết cách tổ chức dữ liệu bên trong** (mọi CTDL có thể được duyệt theo cùng 1 cách khi dùng iterator)
+
+> Iterator: Provides a way to access the elements of an aggregate object sequentially without exposing its underlying representation
+
+> iterators are designed to let you handle many different kinds of collections by accessing their members in a standard, accepted way, without having to know the internal details of those collections
+
+**Iterator pattern khá hữu dụng khi bạn tạo 1 collection là sự kết hợp của nhiề sub-collection, chẳng hạn list với hash**
+
+> Why aren’t iterators built into the collections they work with> The design insight here is one of what’s called single responsibility: the collection maintains the collection; the iterator provides access to the elements of the collection
+
+Trong Java, bạn chỉ cần implement interface `Iterator` là được rồi!
+
+Quay lại ví dụ, giả sử bạn tạo 1 CTDL tên là Division để quản lý các VP, ta cần tạo 1 iterator để duyệt các VP được lưu trong mảng. (Trong ví dụ này dùng mảng cho đơn giản vì thực tế có thể bạn sẽ lưu VP bằng 1 CTDL phức tạp hơn (AVL Tree, TRIE...))
+
+```java
+// Vice President
+class VP {
+    private String name;    // tên của VP
+    private String division;    // tên của division mà ông ta đang quản lý
+    // constructor, getters, setters
+}
+
+// Mỗi bộ phận lưu danh sách các phó chủ tịch!
+// Cty bạn có quá nhiều phó chủ tịch!!! Thật nực cười :v
+class Division {
+    private String name; // tên bộ phận
+    private VP[] VPs = new VP[100];
+    private int number = 0; // số lượng VP, chỉ dùng cho CTDL Division, tức là ko có getter
+
+    public void addVP(String name) {
+        VP vp = new VP(name, this.name);
+        VPs[number++] = vp;
+    }
+
+    // Iterating over vice presidents:
+    // iterator để duyệt các phó chủ tịch của cty
+    public Iterator<VP> vpIterator() {
+        return new VPIterator();
+    }
+
+    // Thường thì sẽ tạo class Iterator là inner class, để có thể access trực tiếp tới
+    // biến mà CTDL dùng để lưu data (trong vd này là mảng VPs của Division)
+    // (trong sách tên là DivisionIterator)
+    private class VPIterator implements Iterator<VP> {
+        private int location = 0;
+
+        @Override
+        public boolean hasNext() {
+            return location < VPs.length && VPs[location] != null;
+        }
+
+        @Override
+        public VP next() {
+            return VPs[location++];
+        }
+    }
+}
+public static void main(String[] args) {
+    Division division = new Division("Sales");
+    division.addVP("Ted");
+    division.addVP("Bob");
+    division.addVP("Carol");
+    division.addVP("Alice");
+
+    Iterator<VP> iter = division.vpIterator();
+    while (iter.hasNext()) {
+        System.out.println(iter.next());
+    }
+}
+```
+
+> Java 5 makes working with iterators all the more easy by making them disappear entirely. You can do that with the for/in statement
+```java
+for (String vp : VPs){
+    System.out.println(vp);
+}
+```
+
+### 8.2. Putting Together Composites
+
+Trong ví dụ trên, bạn đã in ra các VP của 1 Division, bài toán bây giờ mở rộng hơn, bạn phải in ra toàn bộ các VP của tất cả các Division. Chưa hết, 1 Division có thể có sub-division, và trong đó cũng có các VP, bạn phải in ra hết
+
+![figure8-3](./figure8-3.png)
+
+> The Composite pattern is all about creating tree-like structures where the leaves in a structure can be treated in the same way as the branches
+
+> Compose objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly
+
+Hiểu đơn giản thì Composite pattern sẽ tổng hợp các object thành kiểu cấu trúc cây (tree), và các lá và các cành sẽ có cấu trúc giống nhau
+
+> The insight behind the Composite pattern is really about treating the leaves and branches in a tree-like structure the same way, not about tree structures per se
+
+**Để implement composite pattern, bạn cần 1 abstract class cho cả lá và cành (leaves and branches)**
+
+```java
+// Abstract class dùng cho cả Division và VP
+abstract class Corporate {
+    // bắt buộc các class con đều phải định nghĩa các print
+    public abstract void print();
+    public abstract String getName();
+    public abstract Iterator<? extends Corporate> iterator();
+    // mặc định ko có method add (chẳng hạn VP ko cần add gì)
+    public void add(Corporate c) {}
+}
+
+class Division extends Corporate {
+    // Do bên trong 1 Division có cả Division khác và Vice President,
+    // mà 2 object đó đều là con của Corporate, do đó có thể lưu cả 2
+    // trong 1 array kiểu Corporate
+    private Corporate[] corporate = new Corporate[100];
+    private int number = 0;
+    private String name;
+    @Override
+    public String getName() {
+        return name;
+    }
+    // Tên là add chứ ko phải là addVP như trước, vì giờ có thể
+    // phải add cả 1 object kiểu Division
+    @Override
+    public void add(Corporate c) {
+        corporate[number++] = c;
+    }
+    @Override
+    public Iterator<Corporate> iterator() {
+        return new DivisionIterator();
+    }
+    @Override
+    public void print() {
+        System.out.println("Division: " + name);
+        Iterator<Corporate> iterator = iterator();
+        while (iterator.hasNext()) {
+            Corporate c = iterator.next();
+            c.print();
+        }
+    }
+    private class DivisionIterator implements Iterator<Corporate> {
+        private int location = 0;
+        @Override
+        public boolean hasNext() {
+            return location < corporate.length && corporate[location] != null;
+        }
+        @Override
+        public Corporate next() {
+            return corporate[location++];
+        }
+    }
+}
+
+class VP extends Corporate {
+    private String name;
+    private String division;
+    // Do VP ko lưu collection nào nên ko cần Iterator
+    @Override
+    public Iterator<VP> iterator() {
+        return new VPIterator();
+    }
+    private class VPIterator implements Iterator<VP> {
+        @Override
+        public boolean hasNext() {
+            return false;
+        }
+        @Override
+        public VP next() {
+            return null;
+        }
+    }
+    @Override
+    public void print() {
+        System.out.println("[VP] Name: " + name + ", Division:" + division);
+    }
+}
+
+public static void main(String[] args) {
+    Division corporation = new Division("Công ty cổ phần Tuzaku");
+
+    Division rnd = new Division("R&D");
+    rnd.add(new VP("Steve", "R&D"));
+    rnd.add(new VP("Mike", "R&D"));
+    rnd.add(new VP("Nancy", "R&D"));
+
+    Division sales = new Division("Sales");
+    sales.add(new VP("Ted", "Sales"));
+    sales.add(new VP("Bob", "Sales"));
+    sales.add(new VP("Carol", "Sales"));
+    sales.add(new VP("Alice", "Sales"));
+
+    Division western = new Division("Western Sales");
+    western.add(new VP("Wally", "Western Sales"));
+    western.add(new VP("Andre", "Western Sales"));
+    sales.add(western);
+
+    VP vp = new VP("Cary", "Division root");
+
+    corporation.add(rnd); // add sub-division
+    corporation.add(sales); // add sub-division
+    corporation.add(vp); // add VP
+
+    corporation.print();
+}
+```
+
+Code thực tế có thêm level để dễ quản lý, [xem thêm tại đây](./chapter8/composite/myway_no_need_corporation/CompositePattern.java)
+

@@ -15,7 +15,7 @@ class MeatBurger implements Burger {
 }
 
 
-// 2. Concrete Componen
+// 2. Concrete Component
 class VeggieBurger implements Burger {
     @Override
     public String makeBurger() {
