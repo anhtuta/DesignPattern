@@ -14,7 +14,7 @@ Design patterns are intended to help you **handle change** as you have to adapt 
 - freestanding (adj): đứng 1 mình
 - volatile /ˈvɑː.lə.t̬əl/ (adj): dễ thay đổi (change rapidly and unpredictably)
 - interchangeable (adj): có thể hoán đổi lẫn nhau
-- Runtime: là giai đoạn mà chương trình đang chạy (đang thực thi). VD như `RuntimeException` là `Exception` xảy ra trong thời gian chương trình chạy, chẳng hạn `ArrayIndexOutOfBoundsException`, `NullPointerException`, `ArithmaticException` là các ngoại lệ chỉ xảy ra tại lúc runtime
+- Runtime: là giai đoạn mà chương trình đang chạy (đang thực thi). VD như `RuntimeException` là `Exception` xảy ra trong thời gian chương trình chạy, chẳng hạn `ArrayIndexOutOfBoundsException`, `NullPointerException`, `ArithmeticException` là các ngoại lệ chỉ xảy ra tại lúc runtime
 
 ## Chapter 2: Putting Plans into Action with the Strategy Pattern
 
@@ -1269,6 +1269,7 @@ public static void main(String[] args) {
 ```
 
 > Java 5 makes working with iterators all the more easy by making them disappear entirely. You can do that with the for/in statement
+
 ```java
 for (String vp : VPs){
     System.out.println(vp);
@@ -1400,3 +1401,176 @@ public static void main(String[] args) {
 
 Code thực tế có thêm level để dễ quản lý, [xem thêm tại đây](./chapter8/composite/myway_no_need_corporation/CompositePattern.java)
 
+## Chapter 9: Getting Control of Your Objects with the State and Proxy Patterns
+
+### 9.1. Finite-state machine
+
+Cty bạn cần thiết kế 1 hệ thống thuê nhà tự động (rental automat, gọi tắt là automat):
+
+- Hệ thống sẽ chấp nhận các đơn xin thuê (application) và phân phát chìa khóa (dispense keya)
+- Người thuê mới có thể gửi đơn đăng ký thuê của họ đến automat
+- Khi người thuê nhà gửi đơn đăng ký, automat sẽ kiểm tra nó. Nếu đơn đăng ký được chấp thuận, automat sẽ phân phát chìa khóa cho người thuê; nếu không, automat sẽ thông báo cho người thuê rằng anh ta đã bị từ chối và quay lại đợi
+- Nếu automat cho họ thuê, sau đó automat cần kiểm tra xem còn căn hộ cho thuê nữa ko
+
+Từ trên có thể thấy hệ thống gồm 4 state sau:
+
+- Đợi người thuê nhà mới
+- Nhận đơn
+- Cho thuê căn hộ
+- Toàn bộ căn hộ đã được thuê
+
+![figure9-1](./figure9-1.png)
+
+> When you face a large-scale application and the coding gets out of hand, it often helps to start thinking in terms of **various states**. This device helps you segment your code into independent units (states) — ideally, each state should be logically independent of the others, so **thinking in terms of states can automatically divide your code into discrete sections**
+
+State pattern: **Allow an object to alter its behavior when its internal state changes. The object will appear to change its class**
+
+Cho phép object thay đổi state (trạng thái) bên trong nó, các object khác có thể check trạng thái hiện tại của nó. State pattern hữu dụng khi hệ thống của bạn lớn và phức tạp
+
+```java
+class RentalAutomat {
+    private final static int WAITING = 0;
+    private final static int GOT_APPLICATION = 1;
+    private final static int APARTMENT_RENTED = 2;
+    private final static int FULLY_RENTED = 3;
+    private Random random;
+    private int numberApartments;
+    private int state;
+
+    public RentalAutomat(int n) {
+        numberApartments = n;
+        random = new Random(System.currentTimeMillis());
+        state = WAITING;
+    }
+
+    // Hệ thống nhận đơn xin thuê nhà
+    public void receiveApplication() {
+        switch (state) {
+            case FULLY_RENTED:
+                System.out.println("Sorry, we’re fully rented.");
+                break;
+            case WAITING:
+                state = GOT_APPLICATION;
+                System.out.println("Thanks for the application.");
+                break;
+            case GOT_APPLICATION:
+                System.out.println("We already got your application.");
+                break;
+            case APARTMENT_RENTED:
+                System.out.println("Hang on, we’re renting you an apartment.");
+                break;
+        }
+    }
+
+    // Hệ thống xử lý đơn xin thuê nhà
+    public void processApplication() {
+        int yesno = random.nextInt() % 10;
+        switch (state) {
+            case FULLY_RENTED:
+                System.out.println("Sorry, we’re fully rented.");
+                break;
+            case WAITING:
+                System.out.println("You have to submit an application.");
+                break;
+            case GOT_APPLICATION:
+                if (yesno > 4 && numberApartments > 0) {
+                    System.out.println("Congratulations, you were approved.");
+                    state = APARTMENT_RENTED;
+                    rentApartment();
+                } else {
+                    System.out.println("Sorry, you were not approved.");
+                    state = WAITING;
+                }
+                break;
+            case APARTMENT_RENTED:
+                System.out.println("Hang on, we’re renting you an apartment.");
+                break;
+        }
+    }
+
+    // Hệ thống thực hiện việc cho thuê nhà
+    private void rentApartment() {
+        switch (state) {
+            case FULLY_RENTED:
+                System.out.println("Sorry, we’re fully rented.");
+                break;
+            case WAITING:
+                System.out.println("You have to submit an application.");
+                break;
+            case GOT_APPLICATION:
+                System.out.println("You must have your application checked.");
+                break;
+            case APARTMENT_RENTED:
+                System.out.println("Renting you an apartment....");
+                numberApartments--;
+                dispenseKeys();
+                break;
+        }
+    }
+
+    // Giao chìa khóa cho người thuê
+    private void dispenseKeys() {
+        switch (state) {
+            case FULLY_RENTED:
+                System.out.println("Sorry, we’re fully rented.");
+                break;
+            case WAITING:
+                System.out.println("You have to submit an application.");
+                break;
+            case GOT_APPLICATION:
+                System.out.println("You must have your application checked.");
+                break;
+            case APARTMENT_RENTED:
+                System.out.println("Here are your keys!");
+                state = WAITING;
+                break;
+        }
+    }
+}
+
+public static void main(String[] args) {
+    RentalAutomat rentalAutomat = new RentalAutomat(9);
+    rentalAutomat.receiveApplication();
+    rentalAutomat.processApplication();
+}
+```
+
+Hệ thống trên lưu mỗi state dưới 1 biến constant, có điều nếu sau này cần thêm mới state thì lại phải sửa TOÀN BỘ code cũ (cả 4 method ở trên) => vi phạm nguyên lý **Open–closed principle**
+
+### 9.2. Using objects to encapsulate state
+
+Giả sử hệ thống của bạn, tương lai nếu thêm state, thì chỉ phải sửa toàn bộ code bên trong 4 method trên thôi, chứ ko cần thêm mới các method khác (ko cần thêm mới bước nào nữa trong quá trình cho thuê nhà). Như đã nói ở trước, volatile code cần phải tách riêng!
+
+> It’s a better idea to give each state its own class.
+
+=> Sau này nếu hệ thống cần thêm mới state, chỉ cần tạo mới class chứ ko cần sửa code cũ. Đầu tiên tạo interface State và Automat
+
+```java
+// Sau này nếu hệ thống cần thêm mới state, chỉ cần tạo class mới implement interface này
+public interface State {
+    public String gotApplication();
+    public String checkApplication();
+    public String rentApartment();
+    public String dispenseKeys();
+}
+interface AutomatInterface {
+    public void gotApplication();
+    public void checkApplication();
+    public void rentApartment();
+    public void setState(State state);
+    public State getWaitingState();
+    public State getGotApplicationState();
+    public State getApartmentRentedState();
+    public State getFullyRentedState();
+    // gets the current number of apartments for rent
+    public int getCount();
+    // sets the current number of apartments for rent
+    public void setCount(int count);
+}
+```
+
+[Full code](./chapter9/state/encapsulate_state/RentalAutomatSystem.java)
+
+### 9.3. Standing In for Other Objects with Proxies
+
+Updating...
