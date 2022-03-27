@@ -1,10 +1,14 @@
-## Design patterns
+## Design patterns for dummies
 
 Developers spend much more time **extending and changing code** than they do originally developing it (các dev thường dành nhiều time để mở rộng và sửa đổi code hơn là phát triển code mới)
 
 Design patterns are intended to help you **handle change** as you have to adapt your code to new and unforeseen circumstances
 
 One of the design insights of this book is that you should go for **loose coupling** when possible
+
+Tóm tắt sách **Design Patterns For Dummies**, bạn có thể [tải file pdf tại đây](https://drive.google.com/file/d/1ZcrC3cXK3rKCvsS0kGr1oZq5V-cLz27Z/view?usp=sharing)
+
+Note: đây là personal tóm tắt, do đó có 1 vài chỗ có code hơi khác so với sách (chẳng hạn khác tên biến, tên method, hay là implement theo 1 cách hơi khác xíu...)
 
 ## New words
 
@@ -1824,7 +1828,7 @@ class WelcomePage extends Page {
         } catch (IOException e) {
             System.err.println("Error");
         }
-        
+
         // Các page sẽ tương tác qua Mediator thay vì tương tác với nhau
         if (response.equals("y")) {
             mediator.handle(PageState.WELCOME_SHOP);
