@@ -11,7 +11,6 @@ public interface Command {
     public void undo();
 }
 
-
 class ShutDownCommand implements Command {
     Receiver receiver;
 
@@ -37,7 +36,6 @@ class ShutDownCommand implements Command {
     }
 }
 
-
 class RunDiagnosticsCommand implements Command {
     Receiver receiver;
 
@@ -58,7 +56,6 @@ class RunDiagnosticsCommand implements Command {
         System.out.println("Cannot undo diagnostic command!!!\n");
     }
 }
-
 
 class RebootCommand implements Command {
     Receiver receiver;

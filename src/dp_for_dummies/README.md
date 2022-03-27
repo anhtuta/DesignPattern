@@ -4,6 +4,8 @@ Developers spend much more time **extending and changing code** than they do ori
 
 Design patterns are intended to help you **handle change** as you have to adapt your code to new and unforeseen circumstances
 
+One of the design insights of this book is that you should go for **loose coupling** when possible
+
 ## New words
 
 - Polymorphism: tính đa hình
@@ -15,6 +17,16 @@ Design patterns are intended to help you **handle change** as you have to adapt 
 - volatile /ˈvɑː.lə.t̬əl/ (adj): dễ thay đổi (change rapidly and unpredictably)
 - interchangeable (adj): có thể hoán đổi lẫn nhau
 - Runtime: là giai đoạn mà chương trình đang chạy (đang thực thi). VD như `RuntimeException` là `Exception` xảy ra trong thời gian chương trình chạy, chẳng hạn `ArrayIndexOutOfBoundsException`, `NullPointerException`, `ArithmeticException` là các ngoại lệ chỉ xảy ra tại lúc runtime
+- Coordination: sự phối hợp
+- Coupling (n): sự gắn kết. **Loose coupling**: sự gắn kết lỏng lẻo >< tight coupling
+
+  > For maximal flexibility, go for loose coupling when it comes to information flow, not tight coupling (Để có tính linh hoạt tối đa, các object nên có sự gắn kết lỏng lẻo với nhau, không nên gắn kết chặt chẽ)
+
+  > Make the coupling between entities as loose as possible (Làm cho sự gắn kết giữa các entity/object lỏng lẻo nhất có thể)
+
+  > It's difficult to coordinate objects if they’re tightly coupled (Rất khó để điều phối các đối tượng nếu chúng được kết nối chặt chẽ với nhau)
+
+- Decouple (v): tách riêng; làm giản sự gắn kết (giữa các object)
 
 ## Chapter 2: Putting Plans into Action with the Strategy Pattern
 
@@ -1766,3 +1778,7 @@ public static void main(String[] args) {
     invoker.undo();
 }
 ```
+
+### 10.2. Mediator Pattern
+
+> Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently

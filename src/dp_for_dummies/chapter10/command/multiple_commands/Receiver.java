@@ -3,16 +3,11 @@ package dp_for_dummies.chapter10.command.multiple_commands;
 // Interface bao gồm toàn bộ các action riêng rẽ
 public interface Receiver {
     public void connect();
-
     public void diagnostics();
-
     public void reboot();
-
     public void shutdown();
-
     public void disconnect();
 }
-
 
 class AsiaServer implements Receiver {
     @Override

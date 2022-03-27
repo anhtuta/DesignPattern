@@ -3,16 +3,11 @@ package dp_for_dummies.chapter10.command;
 // Interface bao gồm toàn bộ các action riêng rẽ
 public interface Receiver {
     public void connect();
-
     public void diagnostics();
-
     public void reboot();
-
     public void shutdown();
-
     public void disconnect();
 }
-
 
 class AsiaServer implements Receiver {
     @Override
@@ -41,7 +36,6 @@ class AsiaServer implements Receiver {
     }
 }
 
-
 class EuroServer implements Receiver {
     @Override
     public void connect() {
@@ -68,7 +62,6 @@ class EuroServer implements Receiver {
         System.out.println("You’re disconnected from the Euro server.");
     }
 }
-
 
 class USServer implements Receiver {
     @Override

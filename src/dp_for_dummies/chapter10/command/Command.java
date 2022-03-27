@@ -8,7 +8,6 @@ public interface Command {
     public void execute();
 }
 
-
 class ShutDownCommand implements Command {
     Receiver receiver;
 
@@ -25,7 +24,6 @@ class ShutDownCommand implements Command {
     }
 }
 
-
 class RunDiagnosticsCommand implements Command {
     Receiver receiver;
 
@@ -41,7 +39,6 @@ class RunDiagnosticsCommand implements Command {
         System.out.println();
     }
 }
-
 
 class RebootCommand implements Command {
     Receiver receiver;
