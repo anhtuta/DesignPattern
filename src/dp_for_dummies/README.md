@@ -1574,3 +1574,195 @@ interface AutomatInterface {
 ### 9.3. Standing In for Other Objects with Proxies
 
 Updating...
+
+## Chapter 10: Coordinating Your Objects with the Command and Mediator Patterns
+
+### 10.1. Command pattern
+
+Giả sử cty bạn có 1 hệ thống tên là Crisis Center, được đặt ở 3 server như dưới. Mỗi lần có lỗi xảy ra, bạn phải gọi các method như dưới để fix
+
+![figure10-1](./figure10-1.png)
+
+Vấn đề là đôi khi sometimes commands are sent to the wrong server, or programmers forget to connect to a server before issuing commands to it
+
+Command design pattern: bạn nên đóng gói (encapsulate) các action riêng rẽ thành 1 object cho từng mục tiêu cụ thể, chẳng hạn:
+
+```java
+public class ShutDownCommand {
+    public void execute() {
+        anInterface.connect();
+        anInterface.shutdown();
+        anInterface.disconnect();
+        System.out.println();
+    }
+}
+```
+
+Như vậy, user sẽ ko bị quên các step của từng action, hay gọi nhầm action nữa
+
+> Encapsulate a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations
+
+```java
+// Interface bao gồm toàn bộ các action riêng rẽ
+public interface Receiver {
+    public void connect();
+    public void diagnostics();
+    public void reboot();
+    public void shutdown();
+    public void disconnect();
+}
+class AsiaServer implements Receiver {
+    @Override
+    public void connect() {
+        System.out.println("You’re connected to the Asia server.");
+    }
+    @Override
+    public void diagnostics() {
+        System.out.println("The Asia server diagnostics check out OK.");
+    }
+    @Override
+    public void shutdown() {
+        System.out.println("Shutting down the Asia server.");
+    }
+    @Override
+    public void reboot() {
+        System.out.println("Rebooting the Asia server.");
+    }
+    @Override
+    public void disconnect() {
+        System.out.println("You’re disconnected from the Asia server.");
+    }
+}
+class EuroServer implements Receiver {} // tương tự AsiaServer
+class USServer implements Receiver {} // tương tự AsiaServer
+
+// Interface dùng để thực thi 1 tập các action
+public interface Command {
+    // Command execute: dùng để thực thi 1 tập các action theo 1 trình tự nhất định
+    // (class con sẽ tự implement tùy ý), user ko cần phải call manually
+    // từng action một nữa, như vậy có thể tránh được call nhầm hoặc call ko đúng trình tự
+    public void execute();
+
+    // Command undo: undo các action vừa thực thi ở command execute
+    public void undo();
+}
+class ShutDownCommand implements Command {
+    Receiver receiver;
+    @Override
+    public void execute() {
+        receiver.connect();
+        receiver.shutdown();
+        receiver.disconnect();
+        System.out.println();
+    }
+    @Override
+    public void undo() {
+        System.out.println("Undoing shutdown command...");
+        receiver.connect();
+        receiver.reboot();
+        receiver.disconnect();
+        System.out.println("Undoing successfully!\n");
+    }
+}
+class RunDiagnosticsCommand implements Command {
+    Receiver receiver;
+    @Override
+    public void execute() {
+        receiver.connect();
+        receiver.diagnostics();
+        receiver.disconnect();
+        System.out.println();
+    }
+    @Override
+    public void undo() {
+        System.out.println("Cannot undo diagnostic command!!!\n");
+    }
+}
+class RebootCommand implements Command {
+    Receiver receiver;
+    @Override
+    public void execute() {
+        receiver.connect();
+        receiver.reboot();
+        receiver.disconnect();
+        System.out.println();
+    }
+    @Override
+    public void undo() {
+        System.out.println("Undoing reboot command...");
+        receiver.connect();
+        receiver.shutdown();
+        receiver.disconnect();
+        System.out.println("Undoing successfully!\n");
+    }
+}
+
+/**
+ * The invoker là class thực thi command, bạn cần phải load command
+ * cần thực thi vào và bắt nó run command đó. Giả sử rằng việc
+ * undo command giống như stack, tức là bạn phải undo command gần nhất
+ * được thực thi xong mới được phép undo command được thực thi trước đó.
+ * Như vậy có thể dùng Stack để lưu các command
+ */
+public class Invoker {
+    private Stack<Command> stackCommands;
+
+    public Invoker() {
+        stackCommands = new Stack<>();
+    }
+
+    public void setCommand(Command command) {
+        stackCommands.add(command);
+    }
+
+    // Đổi tên thành execute cho trùng với tên method của Command
+    public void execute() {
+        stackCommands.peek().execute();
+    }
+
+    public void undo() {
+        stackCommands.pop().undo();
+    }
+}
+
+public static void main(String[] args) {
+    // Invoker là class đảm nhiệm việc run command nào đó,
+    // muốn đổi command khác bạn phải load command cần đổi (dùng method setCommand)
+    Invoker invoker = new Invoker();
+
+    // Các receiver cho từng server (là các class bao gồm các action riêng rẽ)
+    Receiver asiaServer = new AsiaServer();
+    Receiver euroServer = new EuroServer();
+    Receiver usServer = new USServer();
+
+    // Tạo các command (gồm tập các action)
+    Command shutDownAsia = new ShutDownCommand(asiaServer);
+    Command runDiagnosticsAsia = new RunDiagnosticsCommand(asiaServer);
+    Command shutDownEuro = new ShutDownCommand(euroServer);
+    Command runDiagnosticsEuro = new RunDiagnosticsCommand(euroServer);
+    Command rebootEuro = new RebootCommand(euroServer);
+    Command rebootUS = new RebootCommand(usServer);
+
+    invoker.setCommand(shutDownAsia);
+    invoker.execute();
+
+    invoker.setCommand(runDiagnosticsEuro);
+    invoker.execute();
+
+    invoker.setCommand(rebootEuro);
+    invoker.execute();
+
+    invoker.setCommand(shutDownEuro);
+    invoker.execute();
+
+    invoker.setCommand(runDiagnosticsAsia);
+    invoker.execute();
+
+    invoker.setCommand(rebootUS);
+    invoker.execute();
+
+    invoker.undo();
+    invoker.undo();
+    invoker.undo();
+}
+```
