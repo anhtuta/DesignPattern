@@ -1,5 +1,7 @@
 package dp_for_dummies.chapter10.mediator;
 
+// Object trung gian, các object khác thay vì tương tác với nhau
+// sẽ tương tác qua object này
 public interface Mediator {
     public void enterPage();
     public void handle(PageState state);
@@ -23,6 +25,8 @@ class MediatorClass implements Mediator {
         welcomePage.go();
     }
 
+    // Mediator sẽ chịu trách nhiệm tương tác giữa các page
+    // (trong ví dụ này chỉ là chuyển trang)
     @Override
     public void handle(PageState state) {
         switch (state) {

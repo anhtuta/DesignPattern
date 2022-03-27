@@ -1782,3 +1782,106 @@ public static void main(String[] args) {
 ### 10.2. Mediator Pattern
 
 > Define an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently
+
+Giả sử cty bạn cần xây dựng 1 trang web bán hàng có 4 trang là: WelcomePage (trang chủ), StorePage (trang sản phẩm), PurchasePage (trang thanh toán), ExitPage (GoodbyePage: trang đặt hàng thành công). 4 trang này có thể tương tác với nhau (từ trang nọ nhảy tới trang kia)
+
+![figure10-3](./figure10-3.png)
+
+Việc để các trang giao tiếp với nhau khá lằng nhằng, chưa kể sau này maintain sẽ phải sửa đổi khá phức tạp. Thay vào đó, bạn nên để các trang chỉ tương tác với 1 object trung gian thôi (gọi là Mediator)
+
+![figure10-4](./figure10-4.png)
+
+> When you use a mediator, you’re encapsulating the interaction between objects. Each object no longer has to know in detail how to interact with the other objects
+
+> Mediator pattern: Defines an object that encapsulates how a set of objects interact. Mediator promotes loose coupling by keeping objects from referring to each other explicitly, and it lets you vary their interaction independently
+
+**Nên dùng Mediator pattern khi bạn có 1 tập các object liên kết chặt chẽ với nhau (tightly coupled)**
+
+```java
+// Object trung gian, các object khác thay vì tương tác với nhau
+// sẽ tương tác qua object này
+public interface Mediator {
+    public void enterPage();
+    public void handle(PageState state);
+}
+public enum PageState {
+    WELCOME_SHOP, WELCOME_EXIT, SHOP_PURCHASE, SHOP_EXIT, PURCHASE_EXIT
+}
+public abstract class Page {
+    protected Mediator mediator;
+    protected String response;    // y/n
+    // để đơn giản thì mỗi page chỉ có 1 method này
+    public abstract void go();
+}
+
+class WelcomePage extends Page {
+    @Override
+    public void go() {
+        System.out.print("Do you want to shop? [y/n]?\n");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        try {
+            response = reader.readLine();
+        } catch (IOException e) {
+            System.err.println("Error");
+        }
+        
+        // Các page sẽ tương tác qua Mediator thay vì tương tác với nhau
+        if (response.equals("y")) {
+            mediator.handle(PageState.WELCOME_SHOP);
+        } else {
+            mediator.handle(PageState.WELCOME_EXIT);
+        }
+    }
+}
+class ShopPage extends Page {}
+class PurchasePage extends Page {}
+class ExitPage extends Page {}
+
+class MediatorClass implements Mediator {
+    private WelcomePage welcomePage;
+    private ShopPage shopPage;
+    private PurchasePage purchasePage;
+    private ExitPage exitPage;
+
+    public MediatorClass() {
+        welcomePage = new WelcomePage(this);
+        shopPage = new ShopPage(this);
+        purchasePage = new PurchasePage(this);
+        exitPage = new ExitPage(this);
+    }
+
+    @Override
+    public void enterPage() {
+        welcomePage.go();
+    }
+
+    // Mediator sẽ chịu trách nhiệm tương tác giữa các page
+    // (trong ví dụ này chỉ là chuyển trang)
+    @Override
+    public void handle(PageState state) {
+        switch (state) {
+            case WELCOME_SHOP:
+                shopPage.go();
+                break;
+            case WELCOME_EXIT:
+                exitPage.go();
+                break;
+            case SHOP_PURCHASE:
+                purchasePage.go();
+                break;
+            case SHOP_EXIT:
+                exitPage.go();
+                break;
+            case PURCHASE_EXIT:
+                exitPage.go();
+                break;
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + state);
+        }
+    }
+}
+public static void main(String[] args) {
+    Mediator mediator = new MediatorClass();
+    mediator.enterPage();
+}
+```

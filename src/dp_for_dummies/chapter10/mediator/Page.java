@@ -13,6 +13,7 @@ public abstract class Page {
         this.response = "n";
     }
 
+    // để đơn giản thì mỗi page chỉ có 1 method này
     public abstract void go();
 }
 
@@ -31,6 +32,8 @@ class WelcomePage extends Page {
         } catch (IOException e) {
             System.err.println("Error");
         }
+
+        // Các page sẽ tương tác qua Mediator thay vì tương tác với nhau
         if (response.equals("y")) {
             mediator.handle(PageState.WELCOME_SHOP);
         } else {
