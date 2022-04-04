@@ -10,6 +10,11 @@ Tóm tắt sách **Design Patterns For Dummies**, bạn có thể [tải file pd
 
 Note: đây là personal tóm tắt, do đó có 1 vài chỗ có code hơi khác so với sách (chẳng hạn khác tên biến, tên method, hay là implement theo 1 cách hơi khác xíu...)
 
+1 số nguồn tham khảo thêm:
+
+- https://refactoring.guru/design-patterns
+- https://gpcoder.com/category/design-pattern/
+
 ## New words
 
 - Polymorphism: tính đa hình
@@ -31,6 +36,47 @@ Note: đây là personal tóm tắt, do đó có 1 vài chỗ có code hơi khá
   > It's difficult to coordinate objects if they’re tightly coupled (Rất khó để điều phối các đối tượng nếu chúng được kết nối chặt chẽ với nhau)
 
 - Decouple (v): tách riêng; làm giản sự gắn kết (giữa các object)
+
+## Summary
+
+Tóm tắt 1 vài design pattern nổi bật (viết hoa là được dùng nhiều)
+
+### Creational Patterns
+
+1. [Singleton](#51-singleton-pattern): Đảm bảo 1 class chỉ có 1 instance duy nhất, và cung cấp 1 global access point để truy cập instance đó
+
+2. [FACTORY](#factory-pattern-definition): Định nghĩa 1 interface để khởi tạo object, nhưng để class con quyết định object của class nào sẽ được khởi tạo
+
+3. [ABSTRACT FACTORY](#34-abstract-factory-pattern): Cung cấp một cách để đóng gói một nhóm các Factory riêng lẻ có một chủ đề chung mà không chỉ định các lớp cụ thể của chúng. Thường thì client sẽ tạo ra một triển khai cụ thể của abstract factory và sau đó dùng nó để tạo các đối tượng cụ thể
+
+- Với Factory pattern, ta sẽ tạo object thông qua 1 factory
+- Với Abstract factory pattern, ta phải tạo 1 factory trước đã, sau đó mới tạo 1 object từ factory đó
+
+4. [BUILDER](#73-building-robots-with-the-builder-pattern): cho phép bạn khởi tạo 1 object phức tạp từng bước một (là object gồm rất nhiều thuộc tính, và tương lai class đó có thể có thêm thuộc tính mới)
+
+#### Structural Patterns
+
+1. [ADAPTER](#61-adapter-pattern): cho phép các interface ko tương thích với nhau có thể làm việc với nhau
+
+2. [Decorator](#32-decorator-pattern): cho phép extend 1 object bằng cách wrap nó trong 1 object khác
+
+3. [Composite](#82-putting-together-composites): tổng hợp các object thành kiểu cấu trúc cây (tree), các lá và các cành sẽ có cấu trúc giống nhau
+
+4. [Facade](#facade-pattern-definition): Facade đơn giản hóa 1 interface, nó cung cấp 1 giao diện đơn giản hơn để giúp bạn làm việc với 1 tập phức tạp các class, hoặc 1 hệ thống con phức tạp
+
+5. [Flyweight](#52-the-flyweight-pattern-makes-one-look-like-many): là 1 object dùng chung cho nhiều object (nó sẽ lưu giữ toàn bộ data giống nhau của các object đó)
+
+#### Behavioral Patterns
+
+1. [ITERATOR](#iterator-pattern-definition): cho phép bạn duyệt 1 collection (CTDL) bất kỳ mà ko cần biết cách tổ chức dữ liệu bên trong
+
+2. [STRATEGY](#26-strategy-pattern-là-gì): định nghĩa 1 tập các thuật toán, đóng gói chúng thành các class, (mỗi thuật toán có thể hoán đổi cho nhau), sau đó việc chọn thuật toán nào sẽ được quyết định lúc runtime
+
+3. [OBSERVER](#observer-pattern-definition): định nghĩa 1 cơ chế pub-sub cho phép thông báo tới nhiều object về 1 sự kiện nào đó xảy ra liên quan tới object mà chúng đang quan sát (observe)
+
+4. [Template Method](#71-template-method-pattern): xác định khung (skeleton) của một thuật toán ở class cha và để class con override lại 1 vài step cụ thể của thuật toán đó mà không thay đổi cấu trúc của thuật toán (chẳng hạn thứ tự các step, nếu muốn thay đổi thứ tự thì dùng Builder)
+
+5. [COMMAND](#command-pattern-definition): đóng gói (encapsulate) các action riêng rẽ thành 1 command object cho từng mục tiêu cụ thể
 
 ## Chapter 2: Putting Plans into Action with the Strategy Pattern
 
@@ -312,7 +358,7 @@ Doing so means that you won't have to keep modifying the original class's code o
 
 Đây chính là nguyên lý **Open/closed principle** trong **SOLID**
 
-### 3.1. Factory pattern: ví dụ về multiple database
+### 3.3. Factory pattern: ví dụ về multiple database
 
 Theo [GPCoder](https://gpcoder.com/4352-huong-dan-java-design-pattern-factory-method/):
 
@@ -372,7 +418,19 @@ public class FactoryPattern {
 }
 ```
 
+#### Factory pattern definition
+
 Theo GoF, Factory pattern nên: **Define an interface for creating an object, but let subclasses decide which class to instantiate.**: tức là bạn chỉ cần định nghĩa 1 interface Factory, và **để các subclass tự implement 1 factory cụ thể**
+
+### 3.4. Abstract factory pattern
+
+Theo [Wiki](https://en.wikipedia.org/wiki/Abstract_factory_pattern):
+
+> The abstract factory pattern provides a way to encapsulate a group of individual factories that have a common theme without specifying their concrete classes. In normal usage, the client software creates a concrete implementation of the abstract factory and then uses the generic interface of the factory to create the concrete objects that are part of the theme
+
+> Produce families of related objects without specifying their concrete classes
+
+![figure11-1.png](./figure11-1.png)
 
 Quay lại ví dụ trên, giả sử bây giờ, với mỗi 1 database, bạn cần có thêm 1 cách kết nối `secure` nữa, chẳng hạn:
 
@@ -450,6 +508,8 @@ Sếp của bạn muốn nhận tất cả thông báo về bất kỳ thay đ�
 Observer pattern còn được gọi là Event-Subscriber, Listener. Nó hoạt động giống như mô hình Pub-sub đó (khá quen thuộc): Observer pattern cho phép các observer (subscriber, listener) nhận thông báo mỗi khi 1 object nào đó thay đổi. Mỗi 1 observer sẽ register (subscribe, follow, listen) tới 1 object Publisher, và khi Publisher thay đổi, mọi observer sẽ được thông báo **đồng thời**
 
 Chain of Responsibility Pattern: khá giống với Observer pattern, chỉ khác là các observer được kết nối thành 1 chuỗi (chain). Thông báo sẽ đi từ observer này sang observer khác (tức là 1 observer xử lý thông báo xong có thể pass hoặc ko pass tới observer tiếp theo)
+
+#### Observer pattern definition
 
 Theo GoF, Observer pattern should **Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically**
 
@@ -809,6 +869,8 @@ public static void main(String[] args) {
 
 The Adapter design pattern lets you fix the interface between objects and classes without having to modify the objects or classes directly
 
+> Adapter pattern allows objects with incompatible interfaces to collaborate.
+
 Giả sử hệ thống của bạn có 2 phần: UI và BE. Flow của hệ thống là UI gửi object `Ace` cho BE xử lý. Và BE cũng chỉ nhận object `Ace` mà thôi
 
 ![figure6-1](./figure6-1.png)
@@ -925,6 +987,8 @@ class FacadePrinter {
 }
 ```
 
+#### Facade pattern definition
+
 > Provide a unified interface to a set of interfaces in a system. Facade defines a higher-level interface that makes the subsystem easier to use
 
 Facade đơn giản hóa 1 interface
@@ -973,7 +1037,11 @@ Con robot thiết kế xong, chạy ngon lành! Sau đó tháng sau, sếp bạn
 
 Bạn liền nghĩ đến Template method pattern!
 
-Nó là cái quái gì? Template method xác định khung (skeleton) của một thuật toán, trì hoãn (ko implement chi tiết) một số bước đối với các lớp con. Pattern này cho phép các lớp con override lại các bước nhất định của một thuật toán mà không thay đổi cấu trúc của thuật toán
+Nó là cái quái gì?
+
+#### Template Method definition
+
+Template method xác định khung (skeleton) của một thuật toán, trì hoãn (ko implement chi tiết) một số bước đối với các lớp con. Pattern này cho phép các lớp con override lại các bước nhất định của một thuật toán mà không thay đổi cấu trúc của thuật toán
 
 Nghĩa là: bạn dùng Template method pattern khi bạn có 1 thuật toán gồm nhiều bước, và bạn muốn customize lại 1 số bước trong đó! (bước nào dùng luôn được thì khỏi customize lại)
 
@@ -1213,7 +1281,11 @@ Bài toán đơn giản thôi, dùng iterator để duyệt cái danh sách các
 > These days, you have all kinds of collections to work with — trees, binary trees, arrays, ring buffers, hashes, hash maps, array lists, and many more
 
 Các loại CTDL (collection) trên lưu trữ data theo từng cách riêng, và nếu như muốn truy cập từng phần tử trong từng CTDL đó, bạn sẽ phải hiểu rõ cách mà chúng lưu data như nào!  
-=> Đó chính là lúc nên dùng iterator pattern, nó sẽ cho phép bạn truy cập phần tử của mọi CTDL theo 1 cách tiêu chuẩn **mà ko cần biết cách tổ chức dữ liệu bên trong** (mọi CTDL có thể được duyệt theo cùng 1 cách khi dùng iterator)
+=> Đó chính là lúc nên dùng iterator pattern
+
+#### Iterator pattern definition
+
+Iterator pattern sẽ cho phép bạn truy cập phần tử của mọi CTDL theo 1 cách tiêu chuẩn **mà ko cần biết cách tổ chức dữ liệu bên trong** (mọi CTDL có thể được duyệt theo cùng 1 cách khi dùng iterator)
 
 > Iterator: Provides a way to access the elements of an aggregate object sequentially without exposing its underlying representation
 
@@ -1601,7 +1673,19 @@ Giả sử cty bạn có 1 hệ thống tên là Crisis Center, được đặt 
 
 Vấn đề là đôi khi sometimes commands are sent to the wrong server, or programmers forget to connect to a server before issuing commands to it
 
-Command design pattern: bạn nên đóng gói (encapsulate) các action riêng rẽ thành 1 object cho từng mục tiêu cụ thể, chẳng hạn:
+Command design pattern: bạn nên đóng gói (encapsulate) các action riêng rẽ thành 1 object cho từng mục tiêu cụ thể,
+
+#### Command pattern definition
+
+> Encapsulate a request as an object, thereby letting you parameterize clients with different requests, queue or log requests, and support undoable operations.”
+
+Hiểu đơn giản thì:
+
+- Sẽ có 1 interface `Receiver` bao gồm 1 tập các action riêng rẽ
+- `Command` object sẽ làm việc với `Receiver`, mỗi 1 method của `Command` gồm 1 vài action cụ thể của `Receiver`
+- Interface `Invoker` sẽ thực thi 1 command cụ thể
+
+Quay lại ví dụ:
 
 ```java
 public class ShutDownCommand {

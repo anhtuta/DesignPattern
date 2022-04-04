@@ -30,7 +30,7 @@
 - Service Locator: nó hoạt động như một mapper, cho phép thay đổi code tại thời điểm run-time mà không cần biên dịch lại ứng dụng hoặc phải khởi động lại.
 
 # VD
-```
+```java
 public class EmailService {
     public void sendEmail(String message) {
         System.out.println("Message: " + message);
@@ -73,7 +73,7 @@ Các thành phần tham gia Dependency Injection Pattern (xem ảnh):
 # Inversion of Control
 - Dependency Injection giúp chúng ta dễ dàng mở rộng code và giảm sự phụ thuộc giữa các dependency với nhau. Tuy nhiên, lúc này, khi code bạn sẽ phải kiêm thêm nhiệm vụ Inject dependency (tiêm sự phụ thuộc).
 - Thử tưởng tượng một Class có hàng chục dependency thì bạn sẽ phải tự tay inject từng ý cái. Việc này lại dẫn tới khó khăn trong việc code, quản lý code và dependency
-```
+```java
 HairStyle hairStyle1 = new Sidepart();
 Outfit outfit1 = new Coolmate();
 Shoe shoe1 = new Converse();

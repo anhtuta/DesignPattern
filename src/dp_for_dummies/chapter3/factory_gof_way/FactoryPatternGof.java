@@ -68,7 +68,7 @@ class SecureMySqlConnection extends Connection {
     }
 }
 
-
+// Abstract factory pattern
 abstract class ConnectionFactory {
     public ConnectionFactory() {}
 
