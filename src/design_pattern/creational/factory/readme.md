@@ -41,3 +41,5 @@
 
 # Ref:
 https://gpcoder.com/4352-huong-dan-java-design-pattern-factory-method/
+
+Note: có cảm giác như ví dụ trong cái link của gpcoder ở trên là Factory pattern chứ ko phải Factory method pattern
