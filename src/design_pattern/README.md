@@ -49,11 +49,33 @@ Gồm các thành phần sau:
 
 ![](./creational/factory_method/factory-method-structure.png)
 
+### Code example
+
+[Xem ở đây](./creational/factory_method/refactoringguru/ex1_ui_elements/)
+
 ### When to use?
+
+- **Khi bạn chưa biết trước chính xác kiểu concrete object nào bạn muốn làm việc**
+  - Factory Method tách riêng code khởi tạo Product và code logic xử lý Product, do đó ta dễ dàng mở rộng, thêm mới các kiểu Product cụ thể
+- Khi bạn muốn tạo thư viện/framework, cho phép user có thể mở rộng các internal component
+- Khi bạn muốn sử dụng lại các object hiện có thay vì tạo mới
 
 ### Pros and Cons
 
+Pros:
+
+- **Tránh được tight coupling** giữa Creator và các concrete Product
+- Tuân thủ **Single Responsibility Principle**: move đoạn code khởi tạo các Product ra riêng 1 chỗ
+- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các kiểu concrete Product, ko cần sửa đổi Client code (đoạn code business logic xử lý Product, trong ví dụ trên là method [renderWindow()](./creational/factory_method/refactoringguru/ex1_ui_elements/Dialog.java))
+
+Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case scenario is when you’re introducing the pattern into an existing hierarchy of creator classes.
+
 ### Relations with Other Patterns
+
+- Sau khi biết pattern này, bạn có thể đọc tiếp các pattern Abstract Factory, Prototype, và Builder (more flexible, but more complicated)
+- Abstract Factory thường dựa trên pattern này
+
+(Not done yet. TODO: update nốt sau khi hiểu rõ các pattern khác)
 
 ### Có sẵn trong Java:
 
@@ -64,3 +86,9 @@ Gồm các thành phần sau:
 - `java.net.URLStreamHandlerFactory#createURLStreamHandler(String)` (Returns different singleton objects, depending on a protocol)
 - `java.util.EnumSet#of()`
 - `javax.xml.bind.JAXBContext#createMarshaller()` and other similar methods.
+
+### Ref
+
+- https://refactoring.guru/design-patterns/factory-method
+- https://refactoring.guru/design-patterns/factory-method/java/example
+- https://sourcemaking.com/design_patterns/factory_method (TODO: đọc thêm mục Rules of thumb)
