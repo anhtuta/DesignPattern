@@ -1,5 +1,9 @@
 # Design pattern
 
+Note trong file này:
+
+- Interface có thể thay là abstract class, interface trường hợp này muốn nói tới một kiểu trừu tượng chứ ko phải cụ thể (concrete)
+
 # 1. Creational patterns
 
 ## Factory method
@@ -136,4 +140,57 @@ https://refactoring.guru/design-patterns/factory-comparison
 
 Cho phép tạo ra các **family of related objects** (họ các đối tượng liên quan đến nhau) mà ko cần chỉ rõ các concrete class của chúng
 
-**Family of related objects** là gì? Nó là tập các object liên quan tới nhau
+**Family of related objects** là gì? Nó là tập các object liên quan tới nhau, ví dụ như tập các abstract sau: `Chair` + `Sofa` + `CoffeeTable`. Các biến thể concrete của tập này có thể là
+
+- `ArtDecoChair` + `ArtDecoSofa` + `ArtDecoCoffeeTable` (biến thể thuộc họ ArtDeco)
+- `VictorianChair` + `VictorianSofa` + `VictorianCoffeeTable` (biến thể thuộc họ Victorian)
+- `ModernChair` + `ModernSofa` + `ModernCoffeeTable` (biến thể thuộc họ Modern)
+
+![](./creational/abstract_factory/product-families-and-their-variants.png)
+
+Mỗi biến thể trên được gọi là **variant of a product family** (biến thể của 1 họ các Product)
+
+Tức là, common interface Product**s** của bạn sẽ gồm 3 interface `Chair` + `Sofa` + `CoffeeTable`, và Client có thể tạo các concrete class của tập này là 3 tập trên, và chú ý là sẽ KHÔNG có trường hợp mix, chẳng hạn `ArtDecoChair` + `VictorianSofa` + `VictorianCoffeeTable` hay `ModernChair` + `ArtDecoSofa` + `ModernCoffeeTable`.
+
+Nếu chương trình của bạn ko dùng tới family of related objects, thì bạn ko cần dùng pattern **Abstract factory**
+
+### How to implement?
+
+- Khai báo từng kiểu common interface Product (vd trên có 3 Product: `Chair`, `Sofa`, `CoffeeTable`)
+- Tạo các kiểu concrete Product cho các interface trên, ex:
+  ```java
+  public interface Chair {}
+  public class ArtDecoChair implements Chair {}
+  ```
+- Khai báo **Abstract Factory**, bao gồm các **factory method** dùng để khởi tạo các interface trên (factory method, như nói ở pattern trước, chỉ đơn giản là method return kiểu Product), ex:
+  ```java
+  public interface FurnitureFactory {
+      public abstract Chair createChair();
+      public abstract Sofa createSofa();
+      public abstract CoffeeTable createCoffeeTable();
+  }
+  ```
+- Tạo từng concrete factory cho từng biến thể của họ Product, ex:
+  ```java
+  // Factory cho biến thể ArtDeco: CHỈ CÓ THỂ tạo các object thuộc họ ArtDeco
+  public class ArtDecoFactory implements FurnitureFactory {
+      public abstract Chair createChair() {
+          return new ArtDecoChair();
+      }
+      public abstract Sofa createSofa() {
+          return new ArtDecoSofa();
+      }
+      public abstract CoffeeTable createCoffeeTable() {
+          return new ArtDecoCoffeeTable();
+      }
+  }
+  ```
+
+Với các làm trên, bất kỳ biến thể nào của `Chair` được return từ concrete factory, nó sẽ luôn match với kiểu `Sofa` và `CoffeeTable` được sản xuất bởi factory đó
+
+### Cấu trúc
+
+1. **Abstract Products**: khai báo các kiểu interface cho family of product (tập các product liên quan đến nhau)
+2. **Concrete Products**: concrete Products, được nhóm thành các **variant of a product family** (các biến thể của tập các Product) khác nhau. (Tức là: 1 tập biến thể gồm nhiều concrete Product)
+3. **Abstract Factory**: một interface khai báo các factory method cho việc khởi tạo các Product. Note: các method này phải return các **abstract** Product chứ ko phải các concrete Product
+4. **Concrete Factories**: implement Abstract Factory, chúng sẽ override các factory method để tạo ra các concrete Product **cùng loại** (cùng family)
