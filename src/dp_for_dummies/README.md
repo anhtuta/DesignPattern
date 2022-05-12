@@ -422,6 +422,8 @@ public class FactoryPattern {
 
 Theo GoF, Factory pattern nên: **Define an interface for creating an object, but let subclasses decide which class to instantiate.**: tức là bạn chỉ cần định nghĩa 1 interface Factory, và **để các subclass tự implement 1 factory cụ thể**
 
+Note: pattern này còn được biết đến là **Simple factory** pattern. Còn 1 kiểu pattern khác tương tự với nó là **Factory method**, [xem tại đây](../design_pattern/README.md#factory-method)
+
 ### 3.4. Abstract factory pattern
 
 Theo [Wiki](https://en.wikipedia.org/wiki/Abstract_factory_pattern):

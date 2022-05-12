@@ -6,12 +6,14 @@
 
 ### Tên gọi khác
 
-Virtual Constructor. Note: pattern này khác với Factory pattern
+Virtual Constructor. Note: pattern này khác với **Simple Factory** pattern
 
 ### Intent
 
 - Định nghĩa 1 interface để khởi tạo object ở class cha, nhưng để class con ghi đè (alter) kiểu object sẽ được khởi tạo (note: interface có thể thay bằng 1 abstract class)
 - (Theo ý hiểu cá nhân t thì interface đó sẽ có 1 method tạo object Product (Product cũng là kiểu abstract), việc của class con là ghi đè method đó để tạo ra 1 kiểu concrete class của Product mà nó muốn)
+
+Nếu bạn có 1 method khởi tạo object ở base class, và subclass extend nó và override lại method đó, thì bạn đang dùng **Factory method**!
 
 ### How to implement?
 
@@ -92,3 +94,38 @@ Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case sc
 - https://refactoring.guru/design-patterns/factory-method
 - https://refactoring.guru/design-patterns/factory-method/java/example
 - https://sourcemaking.com/design_patterns/factory_method (TODO: đọc thêm mục Rules of thumb)
+
+## Simple factory
+
+### Intent
+
+- Định nghĩa 1 class có 1 method khởi tạo object Product dựa theo param được truyền vào
+- Đây chính là pattern được giới thiệu trong cuốn **Head First Design Patterns**, [**Design pattern for dummies**](../dp_for_dummies/README.md#factory-pattern-definition)
+
+(Note: `Product` ở đây là 1 kiểu abstract mà ta muốn khởi tạo (như đã nói ở pattern bên trên))
+
+### How to implement?
+
+Thông thường, pattern này chỉ có 1 method bên trong 1 class, method này sẽ nhận params rồi trả về 1 object Product dựa theo param đó. Ex:
+
+```java
+class UserFactory {
+    public static function create(String type) {
+        switch (type) {
+            case 'user': return new User();
+            case 'customer': return new Customer();
+            case 'admin': return new Admin();
+            default:
+                throw new Exception('Wrong user type passed.');
+        }
+    }
+}
+```
+
+### Pros and Cons
+
+Cons: method `create` này sẽ phình to dần nếu sau này cần thêm mới nhiều kiểu object Product. Các khắc phục đơn giản là bóc tách method `create` đó thành các subclass nhỏ hơn => nó sẽ trở thành **Factory method** pattern!
+
+### Ref
+
+https://refactoring.guru/design-patterns/factory-comparison
