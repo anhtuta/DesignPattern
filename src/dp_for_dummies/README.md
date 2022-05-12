@@ -499,6 +499,15 @@ Connection conn2 = factory2.createConnection("Oracle");
 System.out.println(conn2.description());
 ```
 
+Note: pattern này thực ra chỉ là **Simple abstract factory**, với idea rất đơn giản: định nghĩa Simple Factory sử dụng `abstract`. Cũng như Simple factory, cũng có 1 kiểu pattern khác tương tự nó là [**Abstract Factory**](../design_pattern/README.md#abstract-factory). Vâng, đây mới chính xác là **Abstract Factory** pattern
+
+Tóm lại là có 4 pattern liên quan đến factory:
+
+- [Simple factory pattern](#factory-pattern-definition)
+- [Simple abstract factory pattern](#34-abstract-factory-pattern)
+- [Factory method pattern](../design_pattern/README.md#factory-method)
+- [Abstract factory pattern](../design_pattern/README.md#abstract-factory)
+
 ## Chapter 4: Observer and Chain of Responsibility Patterns
 
 ### 4.1. Observer pattern vs Chain of Responsibility Pattern

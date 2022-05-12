@@ -129,3 +129,11 @@ Cons: method `create` này sẽ phình to dần nếu sau này cần thêm mới
 ### Ref
 
 https://refactoring.guru/design-patterns/factory-comparison
+
+## Abstract factory
+
+### Intent
+
+Cho phép tạo ra các **family of related objects** (họ các đối tượng liên quan đến nhau) mà ko cần chỉ rõ các concrete class của chúng
+
+**Family of related objects** là gì? Nó là tập các object liên quan tới nhau
