@@ -154,6 +154,8 @@ Tức là, common interface Product**s** của bạn sẽ gồm 3 interface `Cha
 
 Nếu chương trình của bạn ko dùng tới family of related objects, thì bạn ko cần dùng pattern **Abstract factory**
 
+> And again, a lot of people mix-up the **abstract factory** pattern with a **simple factory** class declared as abstract. Don't do that!
+
 ### How to implement?
 
 - Khai báo từng kiểu common interface Product (vd trên có 3 Product: `Chair`, `Sofa`, `CoffeeTable`)
@@ -195,15 +197,47 @@ Với các làm trên, bất kỳ biến thể nào của `Chair` được retur
 3. **Abstract Factory**: một interface khai báo các factory method cho việc khởi tạo các Product. Note: các method này phải return các **abstract** Product chứ ko phải các concrete Product
 4. **Concrete Factories**: implement Abstract Factory, chúng sẽ override các factory method để tạo ra các concrete Product **cùng loại** (cùng family)
 
+### Code example
+
+[Xem ở đây](./creational/abstract_factory/refactoringguru/furniture_shop/)
+
 ### So sánh Abstract factory (AF) vs Factory method (FM)
 
 - AF gồm tập family of products, còn FM chỉ có 1 interface Product
 
   ![common-interface-product](https://user-images.githubusercontent.com/26838239/168205118-39643910-e0e3-4c6a-adaa-37d9bd5b3d2b.png)
+
 - Factory của AF giống với Creator của FM, cả 2 đều là abstract và cả 2 pattern đều chỉ có 1 thành phần này. Tuy nhiên, factory của AF có nhiều **factory method** vì AF có nhiều Product, trong khi FM chỉ có 1
 
   ![image](https://user-images.githubusercontent.com/26838239/168205450-2b40e159-bd3c-4e1b-aeee-02bef1ed6211.png)
+
 - Concrete factories của AF giống với concrete cretors của FM
 
   ![image](https://user-images.githubusercontent.com/26838239/168205908-639d816b-2e4d-4dc9-aae5-1afe8e03adfc.png)
 
+### When to use?
+
+- Khi bạn phải làm việc với nhiều tập **family of related products**, nhưng bạn ko muốn phụ thuộc vào các concrete Product của tập đó
+  - Pattern này giúp bạn tránh được việc tạo ra các biến thể ko đúng (biến thể gồm các Product khác họ với nhau), chẳng hạn: `ArtDecoChair` + `ModernCoffeeTable`
+  - Khi có nhiều kiểu Product, bạn nên **extract từng factory method thành từng factory class riêng biệt**
+
+### Pros and Cons
+
+Pros:
+
+- Các Product được tạo bởi 1 factory sẽ tương thích với nhau (vì chúng cùng family)
+- Tránh được tight coupling giữa concrete Products và Client code
+- Tuân thủ **Single Responsibility Principle**: move đoạn code khởi tạo các Product ra riêng 1 chỗ
+- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các biến thể của các Product, ko cần sửa đổi Client code (ex: chỉ cần thêm mới Factory và khai báo mới các Product, còn code business logic được xử lý trong method [testFurniture()](./creational/abstract_factory/refactoringguru/furniture_shop/App.java))
+
+Cons: code trở lên phức tạp hơn vì có nhiều interface và class
+
+### Relations with Other Patterns
+
+- Các class của **Abstract Factory** thường dựa trên 1 tập các **Factory Methods**
+- ...
+
+### Ref
+
+- https://refactoring.guru/design-patterns/abstract-factory
+- https://refactoring.guru/design-patterns/factory-comparison

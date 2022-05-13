@@ -1,10 +1,12 @@
 package design_pattern.creational.abstract_factory.refactoringguru.furniture_shop;
 
+// ===== 1. Abstract Product =====
 public interface CoffeeTable {
     String getName();
     String letDrink();
 }
 
+// ===== 2. Concrete Products =====
 class ArtDecoCoffeeTable implements CoffeeTable {
     @Override
     public String getName() {

@@ -1,10 +1,12 @@
 package design_pattern.creational.abstract_factory.refactoringguru.furniture_shop;
 
+// ===== 1. Abstract Product =====
 public interface Sofa {
     String getColor();
     String layDown();
 }
 
+// ===== 2. Concrete Products =====
 class ArtDecoSofa implements Sofa {
     @Override
     public String getColor() {

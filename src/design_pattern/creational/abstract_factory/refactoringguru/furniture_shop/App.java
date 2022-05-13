@@ -12,7 +12,7 @@ public class App {
         coffeeTable = factory.createCoffeeTable();
     }
 
-    public void testingFurnitures() {
+    public void testFurniture() {
         System.out.println("Welcome to our furniture shop! We have lots of thing for you!");
         System.out.println("First, let's take a look at our chair");
         if (chair.hasLegs()) {
