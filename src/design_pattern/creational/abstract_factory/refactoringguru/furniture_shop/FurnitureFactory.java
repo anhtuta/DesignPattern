@@ -11,7 +11,7 @@ public abstract class FurnitureFactory {
 }
 
 // ===== 4. Concrete Factories =====
-// ArtDecoFactory only create ArtDeco family product
+// ArtDecoFactory only create ArtDeco type objects
 class ArtDecoFactory extends FurnitureFactory {
     @Override
     protected Chair createChair() {
@@ -29,6 +29,7 @@ class ArtDecoFactory extends FurnitureFactory {
     }
 }
 
+// VictorianFactory only create Victorian type objects
 class VictorianFactory extends FurnitureFactory {
     @Override
     protected Chair createChair() {
@@ -46,6 +47,7 @@ class VictorianFactory extends FurnitureFactory {
     }
 }
 
+// ModernFactory only create Modern type objects
 class ModernFactory extends FurnitureFactory {
     @Override
     protected Chair createChair() {

@@ -142,9 +142,9 @@ Cho phép tạo ra các **family of related objects** (họ các đối tượng
 
 **Family of related objects** là gì? Nó là tập các object liên quan tới nhau, ví dụ như tập các abstract sau: `Chair` + `Sofa` + `CoffeeTable`. Các biến thể concrete của tập này có thể là
 
-- `ArtDecoChair` + `ArtDecoSofa` + `ArtDecoCoffeeTable` (biến thể thuộc họ ArtDeco)
-- `VictorianChair` + `VictorianSofa` + `VictorianCoffeeTable` (biến thể thuộc họ Victorian)
-- `ModernChair` + `ModernSofa` + `ModernCoffeeTable` (biến thể thuộc họ Modern)
+- `ArtDecoChair` + `ArtDecoSofa` + `ArtDecoCoffeeTable` (biến thể ArtDeco)
+- `VictorianChair` + `VictorianSofa` + `VictorianCoffeeTable` (biến thể Victorian)
+- `ModernChair` + `ModernSofa` + `ModernCoffeeTable` (biến thể Modern)
 
 ![](./creational/abstract_factory/product-families-and-their-variants.png)
 
@@ -155,6 +155,8 @@ Tức là, common interface Product**s** của bạn sẽ gồm 3 interface `Cha
 Nếu chương trình của bạn ko dùng tới family of related objects, thì bạn ko cần dùng pattern **Abstract factory**
 
 > And again, a lot of people mix-up the **abstract factory** pattern with a **simple factory** class declared as abstract. Don't do that!
+
+(Hãy tưởng tượng bạn đang thiết kế một game thế giới mở cực hoành tráng, và hiện tại dự án đang đến đoạn thiết kế furniture shop :v)
 
 ### How to implement?
 
@@ -174,7 +176,7 @@ Nếu chương trình của bạn ko dùng tới family of related objects, thì
   ```
 - Tạo từng concrete factory cho từng biến thể của họ Product, ex:
   ```java
-  // Factory cho biến thể ArtDeco: CHỈ CÓ THỂ tạo các object thuộc họ ArtDeco
+  // Factory cho biến thể ArtDeco: CHỈ CÓ THỂ tạo các object thuộc kiểu ArtDeco
   public class ArtDecoFactory implements FurnitureFactory {
       public abstract Chair createChair() {
           return new ArtDecoChair();
@@ -211,21 +213,21 @@ Với các làm trên, bất kỳ biến thể nào của `Chair` được retur
 
   ![image](https://user-images.githubusercontent.com/26838239/168205450-2b40e159-bd3c-4e1b-aeee-02bef1ed6211.png)
 
-- Concrete factories của AF giống với concrete cretors của FM
+- Concrete factories của AF giống với concrete creators của FM
 
   ![image](https://user-images.githubusercontent.com/26838239/168205908-639d816b-2e4d-4dc9-aae5-1afe8e03adfc.png)
 
 ### When to use?
 
 - Khi bạn phải làm việc với nhiều tập **family of related products**, nhưng bạn ko muốn phụ thuộc vào các concrete Product của tập đó
-  - Pattern này giúp bạn tránh được việc tạo ra các biến thể ko đúng (biến thể gồm các Product khác họ với nhau), chẳng hạn: `ArtDecoChair` + `ModernCoffeeTable`
+  - Pattern này giúp bạn tránh được việc tạo ra các biến thể ko đúng (biến thể gồm các Product khác kiểu với nhau), chẳng hạn: `ArtDecoChair` + `ModernCoffeeTable`
   - Khi có nhiều kiểu Product, bạn nên **extract từng factory method thành từng factory class riêng biệt**
 
 ### Pros and Cons
 
 Pros:
 
-- Các Product được tạo bởi 1 factory sẽ tương thích với nhau (vì chúng cùng family)
+- Các Product được tạo bởi 1 factory sẽ tương thích với nhau (vì chúng cùng variant)
 - Tránh được tight coupling giữa concrete Products và Client code
 - Tuân thủ **Single Responsibility Principle**: move đoạn code khởi tạo các Product ra riêng 1 chỗ
 - Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các biến thể của các Product, ko cần sửa đổi Client code (ex: chỉ cần thêm mới Factory và khai báo mới các Product, còn code business logic được xử lý trong method [testFurniture()](./creational/abstract_factory/refactoringguru/furniture_shop/App.java))
