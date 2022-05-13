@@ -194,3 +194,16 @@ Với các làm trên, bất kỳ biến thể nào của `Chair` được retur
 2. **Concrete Products**: concrete Products, được nhóm thành các **variant of a product family** (các biến thể của tập các Product) khác nhau. (Tức là: 1 tập biến thể gồm nhiều concrete Product)
 3. **Abstract Factory**: một interface khai báo các factory method cho việc khởi tạo các Product. Note: các method này phải return các **abstract** Product chứ ko phải các concrete Product
 4. **Concrete Factories**: implement Abstract Factory, chúng sẽ override các factory method để tạo ra các concrete Product **cùng loại** (cùng family)
+
+### So sánh Abstract factory (AF) vs Factory method (FM)
+
+- AF gồm tập family of products, còn FM chỉ có 1 interface Product
+
+  ![common-interface-product](https://user-images.githubusercontent.com/26838239/168205118-39643910-e0e3-4c6a-adaa-37d9bd5b3d2b.png)
+- Factory của AF giống với Creator của FM, cả 2 đều là abstract và cả 2 pattern đều chỉ có 1 thành phần này. Tuy nhiên, factory của AF có nhiều **factory method** vì AF có nhiều Product, trong khi FM chỉ có 1
+
+  ![image](https://user-images.githubusercontent.com/26838239/168205450-2b40e159-bd3c-4e1b-aeee-02bef1ed6211.png)
+- Concrete factories của AF giống với concrete cretors của FM
+
+  ![image](https://user-images.githubusercontent.com/26838239/168205908-639d816b-2e4d-4dc9-aae5-1afe8e03adfc.png)
+
