@@ -1,4 +1,4 @@
-package design_pattern.creational.abstract_factory.refactoringguru.furniture_shop;
+package dp_refactoring_guru.abstract_factory.furniture_shop;
 
 // ===== 1. Abstract Product =====
 public interface Chair {
