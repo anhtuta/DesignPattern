@@ -6,7 +6,7 @@ Note trong file này:
 
 # 1. Creational patterns
 
-## Factory method
+## 1.1. Factory method
 
 ### Tên gọi khác
 
@@ -99,7 +99,7 @@ Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case sc
 - https://refactoring.guru/design-patterns/factory-method/java/example
 - https://sourcemaking.com/design_patterns/factory_method
 
-## Simple factory
+## 1.2. Simple factory
 
 ### Intent
 
@@ -134,7 +134,7 @@ Cons: method `create` này sẽ phình to dần nếu sau này cần thêm mới
 
 https://refactoring.guru/design-patterns/factory-comparison
 
-## Abstract factory
+## 1.3. Abstract factory
 
 ### Intent
 
