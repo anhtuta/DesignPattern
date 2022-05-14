@@ -53,11 +53,11 @@ Gồm các thành phần sau:
 
 4. **Concrete Creators**: kế thừa từ Creator do đó nó có thể tạo các kiểu Product khác nhau
 
-![](./creational/factory_method/factory-method-structure.png)
+![](./factory_method/factory-method-structure.png)
 
 ### Code example
 
-[Xem ở đây](./creational/factory_method/refactoringguru/ex1_ui_elements/)
+[Xem ở đây](./factory_method/ui_elements/)
 
 ### When to use?
 
@@ -72,7 +72,7 @@ Pros:
 
 - **Tránh được tight coupling** giữa Creator và các concrete Product
 - Tuân thủ **Single Responsibility Principle**: move đoạn code khởi tạo các Product ra riêng 1 chỗ
-- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các kiểu concrete Product, ko cần sửa đổi Client code (đoạn code business logic xử lý Product, trong ví dụ trên là method [renderWindow()](./creational/factory_method/refactoringguru/ex1_ui_elements/Dialog.java))
+- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các kiểu concrete Product, ko cần sửa đổi Client code (đoạn code business logic xử lý Product, trong ví dụ trên là method [renderWindow()](./factory_method/ui_elements/Dialog.java))
 
 Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case scenario is when you’re introducing the pattern into an existing hierarchy of creator classes.
 
@@ -97,7 +97,7 @@ Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case sc
 
 - https://refactoring.guru/design-patterns/factory-method
 - https://refactoring.guru/design-patterns/factory-method/java/example
-- https://sourcemaking.com/design_patterns/factory_method (TODO: đọc thêm mục Rules of thumb)
+- https://sourcemaking.com/design_patterns/factory_method
 
 ## Simple factory
 
@@ -146,7 +146,7 @@ Cho phép tạo ra các **family of related objects** (họ các đối tượng
 - `VictorianChair` + `VictorianSofa` + `VictorianCoffeeTable` (biến thể Victorian)
 - `ModernChair` + `ModernSofa` + `ModernCoffeeTable` (biến thể Modern)
 
-![](./creational/abstract_factory/product-families-and-their-variants.png)
+![](./abstract_factory/furniture_shop/product-families-and-their-variants.png)
 
 Mỗi biến thể trên được gọi là **variant of a product family** (biến thể của 1 họ các Product)
 
@@ -201,7 +201,7 @@ Với các làm trên, bất kỳ biến thể nào của `Chair` được retur
 
 ### Code example
 
-[Xem ở đây](./creational/abstract_factory/refactoringguru/furniture_shop/)
+[Xem ở đây](./abstract_factory/furniture_shop/)
 
 ### So sánh Abstract factory (AF) vs Factory method (FM)
 
@@ -230,7 +230,7 @@ Pros:
 - Các Product được tạo bởi 1 factory sẽ tương thích với nhau (vì chúng cùng variant)
 - Tránh được tight coupling giữa concrete Products và Client code
 - Tuân thủ **Single Responsibility Principle**: move đoạn code khởi tạo các Product ra riêng 1 chỗ
-- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các biến thể của các Product, ko cần sửa đổi Client code (ex: chỉ cần thêm mới Factory và khai báo mới các Product, còn code business logic được xử lý trong method [testFurniture()](./creational/abstract_factory/refactoringguru/furniture_shop/App.java))
+- Tuân thủ **Open/Closed Principle**: sau này nếu cần mới các biến thể của các Product, ko cần sửa đổi Client code (ex: chỉ cần thêm mới Factory và khai báo mới các Product, còn code business logic được xử lý trong method [testFurniture()](./abstract_factory/furniture_shop/App.java))
 
 Cons: code trở lên phức tạp hơn vì có nhiều interface và class
 
