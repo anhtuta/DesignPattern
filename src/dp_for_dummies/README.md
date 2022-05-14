@@ -422,6 +422,8 @@ public class FactoryPattern {
 
 Theo GoF, Factory pattern nên: **Define an interface for creating an object, but let subclasses decide which class to instantiate.**: tức là bạn chỉ cần định nghĩa 1 interface Factory, và **để các subclass tự implement 1 factory cụ thể**
 
+Note: pattern này còn được biết đến là **Simple factory** pattern. Còn 1 kiểu pattern khác tương tự với nó là **Factory method**, [xem tại đây](../design_pattern/README.md#factory-method)
+
 ### 3.4. Abstract factory pattern
 
 Theo [Wiki](https://en.wikipedia.org/wiki/Abstract_factory_pattern):
@@ -496,6 +498,15 @@ ConnectionFactory factory2 = new NormalFactory();
 Connection conn2 = factory2.createConnection("Oracle");
 System.out.println(conn2.description());
 ```
+
+Note: pattern này thực ra chỉ là **Simple abstract factory**, với idea rất đơn giản: định nghĩa Simple Factory sử dụng `abstract`. Cũng như Simple factory, cũng có 1 kiểu pattern khác tương tự nó là [**Abstract Factory**](../design_pattern/README.md#abstract-factory). Vâng, đây mới chính xác là **Abstract Factory** pattern
+
+Tóm lại là có 4 pattern liên quan đến factory:
+
+- [Simple factory pattern](#factory-pattern-definition)
+- [Simple abstract factory pattern](#34-abstract-factory-pattern)
+- [Factory method pattern](../design_pattern/README.md#factory-method)
+- [Abstract factory pattern](../design_pattern/README.md#abstract-factory)
 
 ## Chapter 4: Observer and Chain of Responsibility Patterns
 

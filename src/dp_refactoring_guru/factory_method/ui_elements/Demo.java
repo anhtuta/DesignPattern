@@ -1,4 +1,4 @@
-package design_pattern.creational.factory_method.refactoringguru.ex1_ui_elements;
+package dp_refactoring_guru.factory_method.ui_elements;
 
 public class Demo {
     private static Dialog dialog;

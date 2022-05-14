@@ -1,4 +1,4 @@
-package design_pattern.creational.factory_method.sourcemaking;
+package dp_refactoring_guru.factory_method.sourcemaking;
 
 interface ImageReader {
     DecodedImage getDecodeImage();
