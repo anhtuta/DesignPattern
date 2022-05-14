@@ -101,7 +101,7 @@ Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case sc
 - https://refactoring.guru/design-patterns/factory-method/java/example
 - https://sourcemaking.com/design_patterns/factory_method
 
-## 1.2. Simple factory
+## Simple factory
 
 ### Intent
 
@@ -136,7 +136,7 @@ Cons: method `create` này sẽ phình to dần nếu sau này cần thêm mới
 
 https://refactoring.guru/design-patterns/factory-comparison
 
-## 1.3. Abstract factory
+## 1.2. Abstract factory
 
 ### Intent
 
@@ -246,7 +246,7 @@ Cons: code trở lên phức tạp hơn vì có nhiều interface và class
 - https://refactoring.guru/design-patterns/abstract-factory
 - https://refactoring.guru/design-patterns/factory-comparison
 
-## 1.4. Builder
+## 1.3. Builder
 
 ### Intent
 
@@ -323,3 +323,37 @@ Hãy dẹp refactoring_guru sang một bên và xét kiểu pattern builder đơ
 https://refactoring.guru/design-patterns/builder
 
 TODO: nếu sau này thấy các implement này có ích, hãy quay lại và note lại theo trang refactoring_guru
+
+## 1.4. Prototype
+
+### Tên gọi khác
+
+Clone
+
+### Intent
+
+Giúp bạn copy 1 object. Đối tượng mới là 1 bản sao giống 100% đối tượng gốc, ta có thể thay đổi dữ liệu của object mới mà ko làm ảnh hưởng đến object gốc
+
+### How to implement?
+
+Trong Java cung cấp mẫu prototype pattern này bằng việc implement interface `Cloneable` và sử dụng method `clone()` để tạo object có đầy đủ thuộc tính của đối tượng ban đầu
+
+Nếu ko code Java thì có thể implement như sau:
+
+- Tạo interface `Prototype` và khai báo method `clone`
+- Class Product muốn clone được phải implement Prototype trên và phải có 1 constructor với param thuộc chính kiểu Product
+- Trong constructor đó, copy toàn bộ field từ param Product vào 1 instance Product mới
+
+### When to use?
+
+- Prototype Pattern được dùng khi việc tạo một object tốn nhiều chi phí và thời gian trong khi bạn đã có một object tương tự tồn tại
+- Khi muốn tạo bản sao của object nhưng object đó có các field private ko truy cập được
+
+### Code example
+
+[Xem ở đây](../design_pattern/creational/prototype/gpcoder/chessboard/README.md)
+
+### Ref
+
+- https://refactoring.guru/design-patterns/prototype
+- https://gpcoder.com/4413-huong-dan-java-design-pattern-prototype/
