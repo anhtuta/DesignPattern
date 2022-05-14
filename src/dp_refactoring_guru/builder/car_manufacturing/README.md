@@ -1,0 +1,1 @@
+Note: implementation này khác một chút với trên refactoring_guru

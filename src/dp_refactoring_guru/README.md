@@ -6,6 +6,8 @@ Note trong file này:
 
 # 1. Creational patterns
 
+Các object muốn khởi tạo sẽ gọi là Product. Thường thì Product sẽ là kiểu abstract
+
 ## 1.1. Factory method
 
 ### Tên gọi khác
@@ -243,3 +245,81 @@ Cons: code trở lên phức tạp hơn vì có nhiều interface và class
 
 - https://refactoring.guru/design-patterns/abstract-factory
 - https://refactoring.guru/design-patterns/factory-comparison
+
+## 1.4. Builder
+
+### Intent
+
+- Giúp khởi tạo object phức tạp (gồm rất nhiều thuộc tính) từng bước một
+- Giúp khởi tạo các object khác nhau, KHÔNG có chung common interface
+
+### Problem
+
+Giả sử class `House` của bạn có rất nhiều thuộc tính, việc khởi tạo các object House với các thuộc tính khác nhau sẽ cho ra kiểu nhà khác nhau, chẳng hạn nhà bên trái chỉ cần garage, do đó ko cần các params `hasSwimPool`, `hasStatues`, `hasGarden`. Trong khi nhà bên phải cần đủ các thứ như vậy
+
+![](./builder/house.png)
+
+Trong nhiều trường hợp, các params sẽ ko cần thiết, và sẽ phải truyền null vào, khiến constructor trông thật xấu xí! Giả sử bạn cần xây 10 ngôi nhà, mà chỉ có 1 ngôi nhà có bể bơi, thì 9 ngôi nhà còn lại, param `hasSwimPool` sẽ bị thừa
+
+Bạn có thể tạo nhiều constructor khác nhau, kiểu như:
+
+```java
+class House {
+    public House() {...}
+    public House(int windows, int doors, int rooms) {...}
+    public House(int windows, int doors, int rooms, boolean hasGarage) {...}
+    public House(int windows, int doors, int rooms, boolean hasGarage, boolean hasSwimPool, boolean hasStatues, boolean hasGarden) {...}
+}
+```
+
+Việc tạo nhiều constructor như vậy chỉ khả thi với các ngôn ngữ hỗ trợ method overloading, chẳng hạn Java, C#
+
+Với class nhiều property như vậy, tốt nhất nên tách việc khởi tạo object sang class khác tên là `Builder`
+
+### How to implement?
+
+- Tạo base interface `Builder` gồm nhiều step giúp tạo object Product
+
+  ![](./builder/house-builder.png)
+
+- Để tạo object, bạn thực thi từng step đó và KHÔNG nhất thiết phải thực thi hết (ko có bể bơi thì ko thực thi `buildSwimPool`)
+
+### Cấu trúc
+
+1. Base interface **Builder**: khai báo các step để tạo object Product
+2. **Concrete builders**: cung cấp các cách triển khai `Builder` khác nhau, do đó chúng có thể trả về các object khác nhau mà KHÔNG follow theo common interface
+3. **Products**: các object cần được khởi tạo, và chúng KHÔNG thuộc 1 common interface nào hết!
+4. **Director**: xác định thứ tự gọi các step để tạo object Product
+5. Client: liên kết concrete builder với director
+
+![](./builder/builder-structure.png)
+
+### Stop!
+
+Thực sự cảm thấy pattern builder trên trang refactoring_guru này có vấn đề!
+
+1. Hãy xem 2 concrete builder sẽ thấy, chúng thực sự GIỐNG nhau
+
+![](./builder/compare-concrete-builders.png)
+
+Vậy thì tại sao phải tạo base builder để làm gì? Tại sao không dùng luôn 1 concrete builder?
+
+2. Cuối cùng thì concrete builder vẫn phải gọi hàm constructor full param của Product để tạo object
+
+```java
+public Car getResult() {
+    return new Car(type, seats, engine, transmission, tripComputer, gpsNavigator);
+}
+```
+
+Vậy nếu sau này class Car có thêm các field mới thì sao? Lại sửa constructor này à, rồi sửa cả method `getResult()` trong builder? Hay là tạo thêm các constructor mới với số lượng param khác nhau?
+
+Có thể ý tưởng của trang này khác với các kiểu builder thông dụng!
+
+Hãy dẹp refactoring_guru sang một bên và xét kiểu pattern builder đơn giản hơn [tại đây](../design_pattern/creational/builder/Person.java)
+
+### Ref
+
+https://refactoring.guru/design-patterns/builder
+
+TODO: nếu sau này thấy các implement này có ích, hãy quay lại và note lại theo trang refactoring_guru
