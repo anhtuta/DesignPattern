@@ -357,3 +357,11 @@ Nếu ko code Java thì có thể implement như sau:
 
 - https://refactoring.guru/design-patterns/prototype
 - https://gpcoder.com/4413-huong-dan-java-design-pattern-prototype/
+
+## 1.5. Singleton
+
+### Intent
+
+Singleton đảm bảo chỉ duy nhất một thể hiện (instance) được tạo ra trong suốt chương trình
+
+Trang refactoring_guru nói ko đủ lắm, xem thêm [tại đây](../design_pattern/creational/singleton/readme.md)
