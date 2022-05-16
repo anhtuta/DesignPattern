@@ -43,6 +43,9 @@ interface Acme {
 // How to solve: tạo 1 adapter để chuyển đổi object Ace được gửi từ phía FE
 // sang object Acme mà BE có thể handle được.
 // => Adapt Ace object để nó trông giống như Acme object
+// 
+// Muốn chuyển đổi từ Ace -> Acme
+// => tạo class implements Acme và nhận param kiểu Ace
 class AceToAcmeAdapter implements Acme {
     // adapter cần chứa 1 object Ace (object cần được chuyển đổi, cần được adapt (adapted object))
     Ace ace;

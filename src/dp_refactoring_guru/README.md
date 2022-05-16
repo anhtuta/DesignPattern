@@ -85,7 +85,7 @@ Cons: Code khá phức tạp do có nhiều class con. Do đó, the best case sc
 
 (Not done yet. TODO: update nốt sau khi hiểu rõ các pattern khác)
 
-### Có sẵn trong Java:
+### Có sẵn trong Java
 
 - `java.util.Calendar#getInstance()`
 - `java.text.NumberFormat#getInstance()`
@@ -365,3 +365,26 @@ Nếu ko code Java thì có thể implement như sau:
 Singleton đảm bảo chỉ duy nhất một thể hiện (instance) được tạo ra trong suốt chương trình
 
 Trang refactoring_guru nói ko đủ lắm, xem thêm [tại đây](../design_pattern/creational/singleton/readme.md)
+
+# 2. Structural patterns
+
+## 2.1. Adapter
+
+### Tên gọi khác
+
+Wrapper
+
+### Intent
+
+Cho phép các interface ko tương thích có thể làm việc với nhau
+
+Giúp convert interface A (Client ko giao tiếp được) -> interface B (Client có thể hiểu được)
+
+### Có sẵn trong Java
+
+- `java.util.Arrays#asList()`
+- `java.util.Collections#list()`
+- `java.util.Collections#enumeration()`
+- `java.io.InputStreamReader(InputStream)` (returns a Reader object)
+- `java.io.OutputStreamWriter(OutputStream)` (returns a Writer object)
+- `javax.xml.bind.annotation.adapters.XmlAdapter#marshal()` and `#unmarshal()`
