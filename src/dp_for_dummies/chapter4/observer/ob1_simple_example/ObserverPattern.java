@@ -21,8 +21,8 @@ public class ObserverPattern {
 
     public static void main(String[] args) throws InterruptedException {
         // Không thể dùng Publisher dbHelper = new DatabasePublisher();
-        // Vì interface Publisher làm gì có method editRecord.
-        // Cũng ko thể add method editRecord vào interface Publisher,
+        // Vì interface Publisher làm gì có method saveToDb.
+        // Cũng ko thể add method saveToDb vào interface Publisher,
         // vì method ý chả liên quan đến interface này
         DatabaseHelper dbHelper = new DatabaseHelper();
         Developer dev = new Developer();
@@ -32,8 +32,16 @@ public class ObserverPattern {
         dbHelper.registerObserver(dev);
         dbHelper.registerObserver(leader);
         dbHelper.registerObserver(boss);
+        dbHelper.registerObserver(boss); // add nhiều lần, ignore
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
+            System.out.println("i = " + i);
+            dbHelper.saveToDb(getRandomInArray(DB_OPERATIONS), getRandomInArray(LOREM_WORDS));
+            Thread.sleep(500);
+        }
+
+        dbHelper.removeObserver(boss);
+        for (int i = 5; i < 10; i++) {
             System.out.println("i = " + i);
             dbHelper.saveToDb(getRandomInArray(DB_OPERATIONS), getRandomInArray(LOREM_WORDS));
             Thread.sleep(500);

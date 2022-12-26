@@ -1,7 +1,7 @@
 package dp_for_dummies.chapter4.observer.ob1_simple_example;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 // Trong sách đặt là Subject
 public interface Publisher {
@@ -22,14 +22,12 @@ public interface Publisher {
 // Class giúp thao tác tới database
 class DatabaseHelper implements Publisher {
 
-    private List<Observer> observers;
+    private Set<Observer> observers; // Dùng set để nếu add 1 thằng nhiều lần thì ignore
     private String operation;
     private String record;
 
     public DatabaseHelper() {
-        // dùng LinkedList vì chủ yếu dùng các thao tác add, remove, duyệt tuần tự,
-        // chứ ko cần truy cập phần tử ngẫu nhiên
-        observers = new LinkedList<>();
+        observers = new HashSet<Observer>();
     }
 
     @Override
