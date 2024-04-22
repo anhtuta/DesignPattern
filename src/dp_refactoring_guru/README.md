@@ -243,3 +243,68 @@ Cons: code trở lên phức tạp hơn vì có nhiều interface và class
 
 - https://refactoring.guru/design-patterns/abstract-factory
 - https://refactoring.guru/design-patterns/factory-comparison
+
+# 2. Structural Patterns
+
+## Proxy
+
+### Intent
+
+This pattern provides a substitute or placeholder for another object. A proxy controls access to the original object, allowing you to perform something either before or after the request gets through to the original object
+
+Proxy là 1 object thay thế cho 1 object khác (trong JS gọi là target). Ta sẽ giao tiếp với proxy thay vì target object. Proxy giúp quản lý access tới target object (chẳng hạn validate, authenticate hay check cache trước khi cho request truy cập vào object thực sự (target))
+
+Bài toán: ứng dụng có rất nhiều client connect tới database, và ta muốn dùng lazy initialization: khởi tạo object khi cần chứ không khởi tạo tất cả object khi startup.
+
+- Ta có thể sửa code của các client và implement lazy init ở đây, tuy vậy sẽ có rất nhiều duplicated code.
+- Ta cũng có thể implement lazy init ở class kết nối đến db (classA), nhưng có trường hợp class này của thư viện và ta không sửa code được (có thể hình dung ở hình dưới, classA chính là service đứng ngay trước DB, nó sẽ kết nối và query trực tiếp tới db, client code sẽ gọi tới classA này nếu muốn thao tác tới db)
+
+![](./proxy/problem-en-2x.png)
+
+Solution:
+
+- Tạo mới 1 proxy class, với target class chính là object classA ở trên (object connect tới db)
+- Object proxy là sẽ thực hiện việc lazy init
+- Sau khi init xong, nó sẽ delegate công việc còn lại xuống classA
+
+![](./proxy/solution-en-2x.png)
+
+### Cấu trúc
+
+![](./proxy/proxy-structure.png)
+
+Gồm các thành phần sau (để dễ hiểu, target object ở đây là khái niệm bên JS, là object mà Proxy wrap bên trong)
+
+1. `Service Interface`: interface chung cho target object và Proxy.
+2. `Service`: là object mà ta muốn tạo proxy cho nó, đây chính là target object của object Proxy. Như ví dụ trước thì object này chính là classA, nó handle logic tới database
+3. `Proxy`:
+   - Đây là class proxy như đã nói ở trên, client sẽ connect với class này thay vì connect trực tiếp tới `Service` (classA).
+   - Class này sẽ chứa 1 target object, chính là object `Service` implement `Service Interface`
+   - Sau khi Proxy thực hiện xong nhiệm vụ của nó (method `checkAccess()`, method này có thể thực thi: lazy init, logging, access control...), nó sẽ delegate request xuống `Service` (gọi method `operation()`)
+4. `Client`: dùng `Proxy` object thay vì `Service` object
+
+### Ứng dụng
+
+- **Lazy initialization** (virtual proxy): Instead of creating the object when the app launches, you can delay the object’s initialization to a time when it’s really needed
+- **Access control** (protection proxy). This is when you want only specific clients to be able to use the service object (target)
+- Local execution of a remote service (**remote proxy**): the proxy passes the client request over the network, handling all of the nasty details of working with the network
+- **Logging** requests (logging proxy): The proxy can log each request before passing it to the service
+- **Caching** request results (caching proxy)
+
+### Pros and Cons
+
+Pros:
+
+- **Control** the service object without clients knowing about it
+- **Manage the lifecycle** of the service object
+- The proxy works even if the service object isn’t ready or is not available.
+- **Open/Closed Principle**. You can **introduce new proxies without changing the service or clients**.
+
+Cons:
+
+- The code may become **more complicated** since you need to introduce a lot of new classes.
+- The response from the service might get **delayed**.
+
+### Relations with Other Patterns
+
+Updating...
