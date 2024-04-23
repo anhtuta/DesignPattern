@@ -136,6 +136,10 @@ https://refactoring.guru/design-patterns/factory-comparison
 
 ## Abstract factory
 
+Complexity: 2/3
+
+Popularity: 3/3
+
 ### Intent
 
 Cho phép tạo ra các **family of related objects** (họ các đối tượng liên quan đến nhau) mà ko cần chỉ rõ các concrete class của chúng
@@ -246,7 +250,68 @@ Cons: code trở lên phức tạp hơn vì có nhiều interface và class
 
 # 2. Structural Patterns
 
+## Adapter
+
+Tên gọi khác: Wrapper
+
+### Intent
+
+Giúp các object không cùng kiểu interface có thể giao tiếp với nhau
+
+Adapter sẽ implement interface của 1 object và wrap object còn lại. Nói cách khác, adapter sẽ convert kiểu interface này sang kiểu interface kia để client có thể dùng được
+
+Bài toán: bạn có ứng dụng chứng khoán, thu thập data từ nhiều nguồn dưới format XML rồi vẽ thành chart hiển thị cho user. Giờ bạn muốn tích hợp thêm thư viện analytics, nhưng thư viện đó chỉ làm việc với JSON. Bạn không thể thay đổi thư viện để bắt nó nhận input XML
+
+![](./adapter/problem-en-2x.png)
+
+Solution: dùng adapter để convert XML data từ provider sang dạng JSON
+
+![](./adapter/solution-en-2x.png)
+
+Adapters can not only **convert data into various formats** but can also **help objects with different interfaces collaborate**. Here’s how it works:
+
+- The adapter **gets an interface**, compatible with one of the existing objects.
+- Using this interface, the **existing object can safely call the adapter’s methods**.
+- Upon receiving a call, the **adapter passes the request to the second object**, but in a format and order that the second object expects.
+
+Sometimes it’s even possible to create a **two-way adapter** that can convert the calls in both directions.
+
+### Cấu trúc
+
+![](./adapter/adapter-structure.png)
+
+Gồm các thành phần sau:
+
+1. `Client`: là class muốn dùng interface không tương thích. Như ví dụ trên thì client chính là Application. 2 interface không tương thích vs nhau là `ClientAnalytics` và `AnalyticsLibrary`, hiện tại client chỉ làm việc được với XmlStock
+2. `Client Interface`: code cũ của client, làm việc với data format cũ, trong code là `ClientAnalytics`
+3. `Service`, hay `Adaptee`: chính là interface mà client muốn dùng, nhưng không thể dùng trực tiếp được, thường là 3rd-party code. Trong code là `AnalyticsLibrary`
+4. `Adapter`: là class làm việc với cả 2 interface trên, nó sẽ **implement 1 interface** (client interface), và **wrap library interface**. Khi client gọi tới adapter, nó sẽ convert format của client sang format mà library hiểu được, rồi gọi tới method của library
+
+Túm lại thì:
+
+- Có 2 InterfaceA và InterfaceB muốn làm việc với nhau
+- InterfaceA cần gọi sang InterfaceB
+- Method của InterfaceA nhận inputA, trong khi method của InterfaceB nhận inputB
+- **InterfaceA KHÔNG thể call trực tiếp được InterfaceB**
+- Tạo **Adapter implement InterfaceA**, adapter này sẽ **convert inputA sang inputB**, sau đó dùng inputB này **gọi tới InterfaceB**
+- Adapter sẽ phải **implement 1 interface, và wrap 1 interface còn lại**
+
+Nhận xét: sao không viết mỗi 1 method để convertXmlToJson, xong gọi tới library luôn cho nhanh, phải tạo mới interface để làm gì???
+
+### Pros and Cons
+
+Pros:
+
+- Single Responsibility Principle: tách phần convert data ra khỏi business logic
+- Open/Closed Principle: tạo mới adapter để không phải sửa đổi code của client, miễn là client làm việc với adapter thông qua ClientInterface
+
+Cons: tăng độ phức tạp do tạo thêm interface và class. Nếu có thể thì hãy sửa trực tiếp code của Adaptee cho đơn giản
+
 ## Proxy
+
+Complexity: 2/3
+
+Popularity: 1/3
 
 ### Intent
 
@@ -273,7 +338,7 @@ Solution:
 
 ![](./proxy/proxy-structure.png)
 
-Gồm các thành phần sau (để dễ hiểu, target object ở đây là khái niệm bên JS, là object mà Proxy wrap bên trong)
+Gồm các thành phần sau (để dễ hiểu, target object ở đây là khái niệm bên JS, là object mà Proxy wrap bên trong. Target object còn được gọi là **Real object**)
 
 1. `Service Interface`: interface chung cho target object và Proxy.
 2. `Service`: là object mà ta muốn tạo proxy cho nó, đây chính là target object của object Proxy. Như ví dụ trước thì object này chính là classA, nó handle logic tới database
