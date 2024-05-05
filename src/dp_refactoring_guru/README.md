@@ -307,6 +307,116 @@ Pros:
 
 Cons: tăng độ phức tạp do tạo thêm interface và class. Nếu có thể thì hãy sửa trực tiếp code của Adaptee cho đơn giản
 
+## Decorator
+
+Tên gọi khác: Wrapper
+
+### Intent
+
+Giúp thêm behavior vào object bằng cách wrap object đó trong 1 wrapper chứa sẵn các behavior cần thêm đó
+
+Bài toán: giả sử bạn muốn thiết kế 1 thư viện gửi thông báo cho client (application) dùng, nó có 1 method `send` trông như này
+
+![](./decorator/problem1-en-2x.png)
+
+Việc gửi notification có thể thông qua nhiều cách như này:
+
+![](./decorator/problem2-2x.png)
+
+Khá đơn giản, bạn chỉ việc tạo 3 concrete Notifier như hình là được, sau đó client muốn dùng cái nào thì gọi. Nhưng giờ client muốn flexible hơn, lúc thì muốn gửi thông báo tới SMS + Slack, lúc thì muốn gửi qua FB + Slack, bạn nghĩ lại phải tạo từng concrete combined Notifier ứng với từng case như vậy
+
+![](./decorator/problem3-2x.png)
+
+Tại sao, vì nếu cứ dùng 1 cái riêng lẻ, thì mỗi lần gửi thông báo lại phải send nhiều lần:
+
+```java
+Notifier notifier1 = new EmailNotifier(recipients);
+Notifier notifier2 = new SmsNotifier(recipients);
+Notifier notifier3 = new SlackNotifier(recipients);
+
+// One place
+notifier1.send(message);
+notifier2.send(message);
+notifier3.send(message);
+
+// Another place also need to send notification
+notifier1.send(message);
+notifier2.send(message);
+notifier3.send(message);
+
+// Using a combined notifier would be easier to send
+Notifier notifier = new EmailSmsSlackNotifier
+notifier.send("Your account has been locked");
+notifier.send("Another message");
+```
+
+Nhưng nếu dùng class combine đó, trông không ổn chút nào, nếu thêm 1 channel để gửi thông báo nữa, thì phải tạo nhiều class combine nữa!
+
+Solution: **Extending** a class is the first thing that comes to mind when you need to **alter an object’s behavior**. However, **inheritance has several serious caveats** that you need to be aware of (kế thừa cần chú ý những điều sau)
+
+- **Inheritance is static**. You **can’t alter the behavior of an existing object** at runtime. You **can only replace the whole object** with another one that’s created from a different subclass.
+- **Single inheritance**: Subclasses can have just one parent class. In most languages, inheritance doesn’t let a class inherit behaviors of multiple classes at the same time
+
+Để vượt qua caveat trên, có thể dùng:
+
+- Aggregation:
+  - Object A contains object B
+  - B can live without A
+- Composition:
+  - Object A consists of object B
+  - A manages lifecycle of B
+  - B can NOT live without A
+
+![](./decorator/solution1-en-2x.png)
+
+Decorator sẽ dùng Composition: nó sẽ wrap 1 target object bên trong (object này được gọi là wrappee, decorator là wrapper). Wrapper sẽ delegate work cho wrappee, nhưng sẽ làm thêm việc gì đó trước hoặc sau khi delegate
+
+The wrapper **implements the same interface** as the wrapped object (wrappee) => That’s why from the client’s perspective these objects are identical.
+
+Hãy để wrappee (reference field của wrapper) có thể là bất kỳ object nào thuộc kiểu interface đó, như vậy ta có thể bọc 1 target object bằng nhiều wrapper ở ngoài => có thể thêm nhiều behavior hơn
+
+(Make the wrapper’s reference field accept any object that follows that interface. This will let you cover an object in multiple wrappers, adding the combined behavior of all the wrappers to it)
+
+Với bài toán trên, ta sẽ thiết kế lại như này:
+
+- `BaseDecorator` sẽ là abstract class, chứa wrappee và đã implement method send của interface `Notifier` (nó implement đơn giản là delegate cho wrappee thôi). (Việc tạo base này không cần thiết nhưng nên tạo để tránh duplicate code, các concrete decorator không phải viết lại logic method send nữa)
+- Các concrete decorator sẽ extend từ `BaseDecorator`, override lại method send: chúng sẽ không cần implement lại detail method send nữa, chỉ cần gọi `super.send()` là được, sau đó thêm extra behavior vào
+
+![](./decorator/solution2-2x.png)
+
+Cụ thể code: [BaseNotifier](./decorator/notification/libs/decorator/BaseNotifier.java)
+
+### Cấu trúc
+
+![](./decorator/decorator-structure.png)
+
+Gồm các thành phần sau:
+
+1. Interface `Component`, là interface chung cho cả wrapper và wrappee (target object). Trong code là [`Notifier`](./decorator/notification/libs/Notifier.java)
+2. Các `ConcreteComponent`, implement cụ thể của `Component`, chúng là các wrappee, sẽ bị wrap bởi decorator. Trong code là [`EmailNotifier`](./decorator/notification/libs/impl/EmailNotifier.java), `FacebookNotifier`...
+3. `BaseDecorator`: abstract class, chứa wrappee có kiểu `Component`, field này nên là kiểu interface thay vì kiểu cụ thể, để các decorator khác có thể wrap tiếp được. `BaseDecorator` sẽ delegate work cho wrappee (wrapped object). Trong code là [BaseNotifier](./decorator/notification/libs/decorator/BaseNotifier.java)
+4. `ConcreteDecorator`: kế thừa `BaseDecorator`, nó sẽ override lại method `execute` của cha bằng cách gọi method đó của cha, cộng với extra behavior của riêng nó. Trong code là [`EmailDecorator`](./decorator/notification/libs/decorator/EmailDecorator.java)...
+5. `Client`: wrap component bằng nhiều lớp khác nhau, mỗi lớp là 1 decorator mà client muốn thêm tính năng cho component ban đầu
+
+### Pseudocode
+
+Bài toán 2: compress and encrypt sensitive data independently from the code that actually uses this data
+
+![](./decorator/example-2x.png)
+
+Initially, the business logic class could only read and write data in plain text. Then we created several small wrapper classes that add new behavior after executing standard operations in a wrapped object.
+
+The first wrapper encrypts and decrypts data, and the second one compresses and extracts data.
+
+You can even combine these wrappers by wrapping one decorator with another.
+
+Trong ví dụ này, ta có:
+
+- `DataSource`: common interface để đọc và ghi vào file
+- `FileDataSource`: concrete dataSource, sẽ implement việc đọc ghi file nhưng chỉ dưới dạng plain text. Ta sẽ tạo thêm decorator để thêm behavior cho object này. Object thuộc kiểu này sẽ là wrappee, và nó sẽ được wrap bởi các decorator khác
+- `EncryptionDecorator`, `CompressionDecorator`: 2 decorator giúp thêm các hành vi mã hoá và nén trước/sau khi ghi vào file.
+- Hiển nhiên việc đọc ghi file là bắt buộc, việc thêm mã hoá hay nén chỉ là phụ. Ta không thể nén hoặc mã hoá mà không đọc ghi. Do đó `FileDataSource` sẽ là wrappee, còn 2 thằng kia là decorator
+
 ## Proxy
 
 Complexity: 2/3
