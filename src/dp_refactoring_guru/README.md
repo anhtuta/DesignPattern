@@ -415,7 +415,38 @@ Trong ví dụ này, ta có:
 - `DataSource`: common interface để đọc và ghi vào file
 - `FileDataSource`: concrete dataSource, sẽ implement việc đọc ghi file nhưng chỉ dưới dạng plain text. Ta sẽ tạo thêm decorator để thêm behavior cho object này. Object thuộc kiểu này sẽ là wrappee, và nó sẽ được wrap bởi các decorator khác
 - `EncryptionDecorator`, `CompressionDecorator`: 2 decorator giúp thêm các hành vi mã hoá và nén trước/sau khi ghi vào file.
-- Hiển nhiên việc đọc ghi file là bắt buộc, việc thêm mã hoá hay nén chỉ là phụ. Ta không thể nén hoặc mã hoá mà không đọc ghi. Do đó `FileDataSource` sẽ là wrappee, còn 2 thằng kia là decorator
+- Hiển nhiên việc đọc ghi file là bắt buộc, việc thêm mã hoá hay nén chỉ là phụ. Ta không thể nén hoặc mã hoá mà không đọc ghi. Do đó `FileDataSource` sẽ là wrappee, còn 2 thằng kia là decorator. Ta cũng KHÔNG có `FileDecorator`, `EncryptionDataSource` hay `CompressionDataSource`
+- Ví dụ này hơi khác với ví dụ notifier:
+  - Bên Notifier sẽ tạo tất cả các concrete component (wrappee) và các concrete decorator, vì các object đó ngang hàng nhau
+  - Ví dụ này do việc đọc ghi file là bắt buộc, mã hoá và nén chỉ là phụ, nên không cần tạo tất
+
+### Pros and Cons
+
+Pros:
+
+- You can extend an object’s behavior without making a new subclass.
+- You can **add or remove responsibilities** from an object at runtime.
+- You can combine several behaviors by wrapping an object into multiple decorators.
+- **Single Responsibility Principle**. You can divide a monolithic class that implements many possible variants of behavior into several smaller classes.
+
+Cons:
+
+- It’s **hard to remove a specific wrapper** from the wrappers stack.
+- It’s **hard to implement a decorator** in such a way that its behavior doesn’t depend on the order in the decorators stack.
+- The initial configuration code of layers might look pretty ugly.
+
+### Relations with Other Patterns
+
+About the target object:
+
+- With Adapter you access an existing object via different interface.
+- With Proxy, the interface stays the same.
+- With Decorator you access the object via an enhanced interface
+
+Structure, intent: Decorator and Proxy have similar structures, but very different intents.
+
+- Both patterns are built on the composition principle, where one object is supposed to delegate some of the work to another.
+- The difference is that a **Proxy usually manages the life cycle of its service object on its own**, whereas the **composition of Decorators is always controlled by the client**.
 
 ## Proxy
 
