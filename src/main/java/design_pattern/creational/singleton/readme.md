@@ -28,8 +28,20 @@ người ta hướng đến một giải pháp là sử dụng Singleton pattern
   nó là instance duy nhất của class
 - Có một method **public static** để return **instance** được khởi tạo ở trên
 
+# Những cách để implement
+
+1. [Eager initialization](./EagerInitializedSingleton.java)
+2. [Static block initialization](./StaticBlockSingleton.java)
+3. [Lazy initialization](./LazyInitializedSingleton.java)
+4. [Thread-safe Singleton](./ThreadSafeSingleton.java)
+5. [Double Check Locking Singleton]
+
 # Sử dụng khi nào
 - Giải quyết các bài toán cần truy cập vào các ứng dụng như: Shared resource,
   Logger, Configuration, Caching, Thread pool,...
 - Singleton Pattern cũng được sử dụng trong các Design Pattern khác như
   Abstract Factory, Builder, Prototype, Facede...
+
+Ref:
+- https://gpcoder.com/4190-huong-dan-java-design-pattern-singleton/
+- https://batnamv.medium.com/design-pattern-li%E1%BB%87u-b%E1%BA%A1n-c%C3%B3-th%E1%BB%B1c-s%E1%BB%B1-hi%E1%BB%83u-v%E1%BB%81-singleton-pattern-a88aede760f6
