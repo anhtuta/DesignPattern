@@ -34,7 +34,8 @@ người ta hướng đến một giải pháp là sử dụng Singleton pattern
 2. [Static block initialization](./StaticBlockSingleton.java)
 3. [Lazy initialization](./LazyInitializedSingleton.java)
 4. [Thread-safe Singleton](./ThreadSafeSingleton.java)
-5. [Double Check Locking Singleton]
+5. [Double Check Locking Singleton](./DoubleCheckLockingSingleton.java)
+6. [Bill Pugh Singleton Implementation](./BillPughSingleton.java)
 
 # Sử dụng khi nào
 - Giải quyết các bài toán cần truy cập vào các ứng dụng như: Shared resource,
