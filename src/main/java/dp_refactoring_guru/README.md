@@ -433,6 +433,10 @@ Cons:
 
 - It’s **hard to remove a specific wrapper** from the wrappers stack.
 - It’s **hard to implement a decorator** in such a way that its behavior doesn’t depend on the order in the decorators stack.
+  - Cái này theo t hiểu là thứ tự wrap đôi khi rất quan trọng.
+  - Ví dụ bạn có 2 decorator: encrypt và compress. Nếu bạn wrap theo thứ tự: compress rồi encrypt, thì khi đọc file bạn phải decrypt rồi extract.
+  - Còn nếu wrap theo thứ tự ngược lại: encrypt rồi compress, thì khi đọc file bạn phải extract rồi decrypt. Như vậy thứ tự wrap rất quan trọng.
+  - Ví dụ 2: giống như mặc nhiều lớp áo vậy: phải mặc áo len trước khi mặc áo mưa!
 - The initial configuration code of layers might look pretty ugly.
 
 ### Relations with Other Patterns
@@ -447,6 +451,8 @@ Structure, intent: Decorator and Proxy have similar structures, but very differe
 
 - Both patterns are built on the composition principle, where one object is supposed to delegate some of the work to another.
 - The difference is that a **Proxy usually manages the life cycle of its service object on its own**, whereas the **composition of Decorators is always controlled by the client**.
+
+Ref: https://refactoring.guru/design-patterns/decorator
 
 ## Proxy
 
