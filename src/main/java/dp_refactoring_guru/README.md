@@ -605,3 +605,53 @@ Pros
 Cons
 
 - Can be overkill if a state machine has only a **few states** or **rarely changes**
+
+## Strategy
+
+### Intent
+
+Let you define a **family of algorithms**, put each of them into a separate class, and make their objects interchangeable
+
+The Strategy pattern suggests that you take a class that **does something specific in a lot of different ways** and **extract all of these algorithms into separate classes called strategies**
+
+- The original class, called `context`, must have a field for storing a reference to one of the strategies
+- The `context` **delegates the work to a linked strategy object** instead of executing it on its own
+- The `context` is **NOT responsible** for selecting an appropriate algorithm for the job. Instead, **the client passes the desired strategy to the `context`**
+- The `context` doesn’t know much about strategies. It works with all strategies through the same generic interface (the `context` becomes **independent of concrete strategies**) --> easy to add new algorithms or modify existing ones
+
+### Cấu trúc
+
+![](./strategy/strategy-structure.png)
+
+1. The `Context` maintains a reference to one of the concrete strategies and communicates with this object only via the strategy interface
+2. The `Strategy` interface is common to all concrete strategies. **It declares a method the context uses to execute a strategy**
+3. Concrete Strategies implement different variations of an algorithm the context uses
+4. The context calls the execution method on the linked strategy object each time it needs to run the algorithm.
+   - The context doesn’t know what type of strategy it works with or how the algorithm is executed
+5. The Client creates a specific strategy object and **passes it to the context**. The context exposes a setter which lets clients replace the strategy associated with the context at runtime.
+
+Hiểu ngắn gọn:
+
+- Context có 1 field kiểu interface `Strategy`
+- Client sẽ tạo 1 concrete strategy rồi set vào field đó
+- Context gọi method `execute()` của strategy mỗi khi cần chạy thuật toán, nhưng context không biết thuật toán đó là gì và nó ko quan tâm
+- Client là người quy định strategy nào sẽ được sử dụng
+
+### When to use?
+
+- When you want to use **different variants of an algorithm** within an object and be able to **switch from one algorithm to another during runtime**
+- When you have a lot of similar classes that only differ in the way they execute some behavior
+- When your class has a massive conditional statement that switches between different variants of the same algorithm
+
+### Pros and Cons
+
+Pros:
+
+- You can **swap algorithms** used inside an object **at runtime**
+- Replace inheritance with composition
+- Open/Closed Principle: You can introduce new strategies without having to change the context
+
+Cons:
+
+- If you only have a couple of algorithms and they rarely change --> No need to use this pattern (don't overcomplicate things)
+- **Clients must be aware of the differences between strategies** to be able to select a proper one
