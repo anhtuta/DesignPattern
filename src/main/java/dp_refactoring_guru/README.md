@@ -520,3 +520,88 @@ Cons:
 ### Relations with Other Patterns
 
 Updating...
+
+# 3. Behavioral Patterns
+
+## State
+
+### Intent
+
+State is a behavioral design pattern that lets an object alter its behavior when its internal state changes. It appears as if the object changed its class
+
+State cho phép một đối tượng **thay đổi hành vi** của nó **khi trạng thái bên trong thay đổi**, như thể đối tượng đã thay đổi lớp của nó
+
+The State pattern is closely related to the concept of a Finite-State Machine
+
+- Tại 1 thời điểm chỉ có **giới hạn số lượng state**
+- Với mỗi state, chương trình lại hoạt động khác nhau
+- Chương trình có thể chuyển đổi giữa các state này
+- Nhưng **tuỳ theo state hiện tại** mà nó có thể chuyển sang state nào hoặc ko thể chuyển sang state nào
+- These switching rules, called **transitions**, are also finite and predetermined (có giới hạn và được xác định trước)
+
+![fsm](./state/fsm.png)
+
+- State machines are usually implemented with **lots of conditional statements** (`if` or `switch`)
+  ```js
+  class Document is
+      field state: string
+      // ...
+      method publish() is
+          switch (state)
+              "draft":
+                  state = "moderation"
+                  break
+              "moderation":
+                  if (currentUser.role == "admin")
+                      state = "published"
+                  break
+              "published":
+                  // Do nothing.
+                  break
+      // ...
+  ```
+- Nhược điểm của cách trên: khi thêm mới nhiều state, code sẽ trở lên phức tạp hơn rất nhiều, và việc sửa đổi code cũng khó khăn hơn
+- Any change to the transition logic may require changing state conditionals in every method
+
+Solution: The State pattern suggests that you **create new classes for all possible states** of an object and **extract all state-specific behaviors** into these classes
+
+- Instead of implementing all behaviors on its own, the original object, called `context`, **stores a reference to one of the state objects that represents its current state**, and delegates all the state-related work to that object
+  - Context (class mà có nhiều state) sẽ có 1 field có kiểu `State`, field này lưu state hiện tại của context
+- To transition the context into another state, **replace the active state object with another object** that represents that new state
+  - Để chuyển đổi state, ta chỉ cần thay thế object state hiện tại bằng object state mới
+  - 2 object state này đều implement cùng 1 interface `State`
+- Khá giống với Strategy, nhưng khác ở chỗ:
+  - State pattern: 1 state có thể biết các state khác
+  - State pattern: các strategy hầu như KHÔNG biết gì về nhau
+
+### Cấu trúc
+
+![](./state/state-structure.png)
+
+1. **Context stores a reference** to one of the **concrete state objects** and delegates to it all state-specific work. The context communicates with the state object via the `State` interface. The context **exposes a setter** (`changeState(newState)`) for passing it a new state object.
+   - Trong code là `Player`, nó có 1 field `state` kiểu `State`, field này lưu state hiện tại của player, và player sẽ delegate công việc liên quan đến state cho object state này
+2. The `State` interface **declares the state-specific methods**. These methods should make sense for all concrete states because you don’t want some of your states to have useless methods that will never be called
+   - Trong code là `State`, nó khai báo các method liên quan đến state, và tất cả các concrete state sẽ implement interface này
+3. Concrete States provide their own implementations for the state-specific methods
+   - To avoid duplication of similar code across multiple states, you may provide **intermediate abstract classes that encapsulate some common behavior**
+   - State objects may **store a backreference to the context object**. Through this reference, the state can fetch any required info from the context object, as well as initiate state transitions
+4. **Both context and concrete states can set the next state** of the context and perform the actual state transition by replacing the state object linked to the context
+
+### When to use?
+
+- When you have an **object that behaves differently depending on its current state**, the number of states is enormous, and the state-specific code changes frequently
+  - The pattern suggests that you extract all state-specific code into a set of distinct classes
+- When you have a class polluted with **massive conditionals** that alter how the class behaves according to the current values of the class’s fields
+- When you have a lot of duplicate code across similar states and transitions of a condition-based state machine
+
+### Pros and Cons
+
+Pros
+
+- Single Responsibility Principle
+- Open/Closed Principle
+- Simplify the code by eliminating bulky state machine conditionals
+
+Cons
+
+- Can be overkill if a state machine has only a **few states** or **rarely changes**
