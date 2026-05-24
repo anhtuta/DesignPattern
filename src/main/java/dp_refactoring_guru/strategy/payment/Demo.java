@@ -50,8 +50,7 @@ public class Demo {
                         "2 - Credit Card");
                 String paymentMethod = reader.readLine();
 
-                // Client creates different strategies based on input from user,
-                // application configuration, etc.
+                // Client creates different strategies based on input from user, application configuration, etc.
                 if (paymentMethod.equals("1")) {
                     strategy = new PayByPayPal();
                 } else {
@@ -60,8 +59,7 @@ public class Demo {
             }
 
             // Order object delegates gathering payment data to strategy object,
-            // since only strategies know what data they need to process a
-            // payment.
+            // since only strategies know what data they need to process a payment.
             order.processOrder(strategy);
 
             System.out.print("Pay " + order.getTotalCost() + " units or Continue shopping? P/C: ");

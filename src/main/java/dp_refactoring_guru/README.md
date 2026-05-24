@@ -606,6 +606,10 @@ Cons
 
 - Can be overkill if a state machine has only a **few states** or **rarely changes**
 
+### Code Examples
+
+- [State pattern example: a media player](./state/media_player/)
+
 ## Strategy
 
 ### Intent
@@ -655,3 +659,52 @@ Cons:
 
 - If you only have a couple of algorithms and they rarely change --> No need to use this pattern (don't overcomplicate things)
 - **Clients must be aware of the differences between strategies** to be able to select a proper one
+
+### Code Examples
+
+- [Strategy pattern example: a payment in an e-commerce app](./strategy/payment/)
+
+## Template Method
+
+### Intent
+
+**Define the skeleton** of an algorithm in the **superclass** but lets **subclasses override specific steps** of the algorithm without changing its structure
+
+The Template Method pattern suggests that:
+
+- Break down an algorithm into a **series of steps**, turn these steps into methods, and **put a series of calls to these methods** inside a **single template method**
+- The steps may either be abstract, or have some default implementation
+- To use the algorithm, the client is supposed to provide its own subclass, implement all abstract steps, and override some of the optional ones if needed (but **not the template method** itself)
+
+### Cấu trúc
+
+![](./template_method/template-method-structure.png)
+
+1. The Abstract Class declares methods that act as steps of an algorithm, as well as the **actual template method** which **calls these methods in a specific order**
+   - The steps may either be declared abstract or have some default implementation
+2. Concrete Classes can **override all of the steps**, but **NOT the template method** itself
+
+Hiểu đơn giản:
+
+- `AbstractClass` định nghĩa các bước của thuật toán, và 1 method gọi là template method, method này sẽ gọi các bước theo thứ tự nhất định
+- `ConcreteClass` sẽ override các bước của thuật toán, nhưng không override template method
+
+### When to use?
+
+- When you want to let clients extend only particular steps of an algorithm, but not the whole algorithm or its structure
+- When you have several classes that contain almost identical algorithms with some minor differences
+
+### Pros and Cons
+
+Pros:
+
+- Clients override only certain parts of a large algorithm
+- Can pull the duplicate code into a superclass
+
+Cons:
+
+- Violate the Liskov Substitution Principle by suppressing a default step implementation via a subclass
+
+### Code Examples
+
+Pattern này khá dễ nên check code bên [dp for dummies](../dp_for_dummies/chapter7/template_method)
