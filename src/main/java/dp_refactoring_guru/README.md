@@ -664,6 +664,15 @@ Cons
 
 - [State pattern example: a media player](./state/media_player/): In this example, the State pattern lets the same media player controls behave differently, depending on the current playback state (cho phép các control button của player hoạt động khác nhau tuỳ theo state hiện tại của player)
 
+### NOTE: This state pattern doesn't work in web app
+
+See more at [README.md](./state/README.md)
+
+In short, in web app, we just need to:
+
+- Store the state in the database
+- Implement a lightweight Transition Registry (a simple class that contains all possible state transitions and the rules for these transitions) to manage state transitions
+
 ## Strategy
 
 ### Intent
