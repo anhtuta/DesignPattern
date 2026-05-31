@@ -464,22 +464,11 @@ import java.util.Set;
 public enum RegistrationState {
     // 1. Define states and list EXACTLY which states they are allowed to transition into
     REGISTER_START(Set.of("CHECK_EMAIL", "FAIL_BY_SYSTEM")),
-
     CHECK_EMAIL(Set.of("EMAIL_INVALID", "EMAIL_EXISTS", "CHECK_PASSWORD", "FAIL_BY_SYSTEM")),
-
-    CHECK_PASSWORD(Set.of("PASSWORD_INVALID", "WAITING_FOR_CONFIRMATION", "FAIL_BY_SYSTEM")),
-
-    WAITING_FOR_CONFIRMATION(Set.of("WAITING_FOR_APPROVAL", "FAIL_BY_SYSTEM")),
-
-    WAITING_FOR_APPROVAL(Set.of("REGISTER_SUCCESS", "REGISTER_REJECTED", "FAIL_BY_SYSTEM")),
 
     // Terminal States (cannot transition anywhere else)
     EMAIL_INVALID(Set.of()),
     EMAIL_EXISTS(Set.of()),
-    PASSWORD_INVALID(Set.of()),
-    REGISTER_SUCCESS(Set.of()),
-    REGISTER_REJECTED(Set.of()),
-    FAIL_BY_SYSTEM(Set.of());
 
     // Internal set storing the names of valid next states
     private final Set<String> nextAllowedStates;
@@ -501,6 +490,8 @@ public enum RegistrationState {
     }
 }
 ```
+
+Full code: [](./user_registration/transition_matrix_enum/RegistrationState.java)
 
 ### How to Cleanly Integrate it Into Your Existing APIs
 
@@ -526,7 +517,9 @@ void approvalUser(User user, boolean approved) {
 }
 ```
 
-## Why this addresses your exact problem:
+Full code: [](./user_registration/transition_matrix_enum/UserService.java)
+
+### Why this addresses your exact problem:
 
 1.  Zero Overhead: You don't create a single extra class, interface, or factory.
 2.  Perfect Readability: The entire system workflow architecture is written as plain configuration text at the top of the RegistrationState.java file. Anyone looking at the code can immediately tell that WAITING_FOR_APPROVAL can only transition to REGISTER_SUCCESS, REGISTER_REJECTED, or FAIL_BY_SYSTEM.
